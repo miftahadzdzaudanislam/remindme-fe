@@ -1,9 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import InputFieldAuth from "../../components/ui/input";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
@@ -12,7 +14,20 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-secondary to-blue-700 flex items-center justify-center p-4 overflow-hidden">
+    <div className="relative min-h-screen bg-linear-to-br from-secondary to-blue-700 flex items-center justify-center p-4 overflow-hidden">
+      {/* Back Button */}
+      <motion.button
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => navigate("/")}
+        className="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition"
+      >
+        <ArrowLeft size={18} />
+        <span className="text-sm font-medium">Back to Home</span>
+      </motion.button>
+
       {/* Background Ornaments */}
       <motion.div
         animate={{ opacity: [0.3, 0.5, 0.3] }}
@@ -42,52 +57,38 @@ export default function Login() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-              Email Address
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
-              <input
-                id="email"
-                type="email"
-                required
-                autoFocus
-                placeholder="name@example.com"
-                className="w-full pl-11 pr-4 py-3 bg-white/70 border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-light/50 transition"
-              />
-            </div>
-          </div>
+          <InputFieldAuth
+            label="Email"
+            icon={Mail}
+            type="email"
+            name="email"
+            placeholder="email@example.com"
+            required
+          />
 
-          {/* Password */}
-          <div>
-            <div className="flex justify-between mb-2">
-              <label htmlFor="password" className="text-sm font-medium text-white">
-                Password
-              </label>
-              <Link to="/forgot-password" className="text-xs text-white/80 hover:text-white hover:underline">
-                Forgot password?
-              </Link>
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                required
-                placeholder="••••••••"
-                className="w-full pl-11 pr-11 py-3 bg-white/70 border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-light/50 transition"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
+          <InputFieldAuth
+            label="Password"
+            icon={Lock}
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="••••••••"
+            required
+          >
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="••••••••"
+              className="w-full pl-11 pr-10 py-3 bg-white/70 border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-light/50 transition"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </InputFieldAuth>
 
           {/* Remember Me */}
           <div className="flex items-center gap-2">
@@ -96,7 +97,10 @@ export default function Login() {
               id="remember"
               className="w-4 h-4 rounded border-2 border-white/60 bg-white/70 accent-primary focus:ring-2 focus:ring-white/50 cursor-pointer"
             />
-            <label htmlFor="remember" className="text-sm text-white/90 cursor-pointer select-none">
+            <label
+              htmlFor="remember"
+              className="text-sm text-white/90 cursor-pointer select-none"
+            >
               Remember me
             </label>
           </div>
