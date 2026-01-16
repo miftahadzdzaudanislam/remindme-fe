@@ -71,13 +71,16 @@ export default function Feature() {
           </div>
         </div>
 
-        <div className="bg-primary text-light rounded-r-verybig py-16 mt-10 me-15 md:py-30">
+        <div className="bg-primary text-white rounded-r-verybig py-16 mt-10 me-15 md:py-30">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-10 text-center">
               {statistic.map((s, index) => (
-                <div key={index} className="hover:scale-110 transition- duration-300 ease-out">
+                <div
+                  key={index}
+                  className="hover:scale-110 transition- duration-300 ease-out"
+                >
                   <h2 className="text-5xl md:text-4xl font-bold">{s.count}</h2>
-                  <h4 className="mt-2 md:text-base font-medium text-light/90">
+                  <h4 className="mt-2 md:text-base font-medium text-white">
                     {s.data}
                   </h4>
                 </div>
@@ -85,7 +88,6 @@ export default function Feature() {
             </div>
           </div>
         </div>
-
       </section>
     </>
   );
