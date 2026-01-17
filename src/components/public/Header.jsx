@@ -74,7 +74,7 @@ export default function MainHeader() {
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex items-center h-20">
             {/* Logo */}
-            <a className="flex items-center gap-1 mx-auto md:mx-0" href="/">
+            <Link className="flex items-center gap-1 mx-auto md:mx-0" href="#">
               <img
                 src="/images/logo-remindme.png"
                 className={`h-10 transition ${
@@ -89,7 +89,7 @@ export default function MainHeader() {
               >
                 RemindMe
               </span>
-            </a>
+            </Link>
 
             {/* Desktop Menu */}
             <ul className="hidden md:flex ml-auto gap-3 font-medium">
@@ -114,9 +114,7 @@ export default function MainHeader() {
                 <Link
                   to="/register"
                   className={`px-4 py-1 rounded-lg transition ${
-                    scrolled
-                      ? "text-primary"
-                      : "text-white"
+                    scrolled ? "text-primary" : "text-white"
                   }`}
                 >
                   Register
@@ -154,7 +152,7 @@ export default function MainHeader() {
         {isOpen && (
           <>
             <motion.div
-              className="fixed inset-0 md:hidden bg-black/20 z-40 mt-20"
+              className="fixed inset-0 md:hidden bg-black/30 z-40 mt-20"
               onClick={() => setIsOpen(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

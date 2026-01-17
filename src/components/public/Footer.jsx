@@ -9,7 +9,9 @@ export default function MainFooter() {
       {/* CONTENT */}
       <div className="relative z-10 text-center">
         Made with ♥️. By MiftahAdz
-        <span className="ml-2 text-xs bg-white/10 px-2 py-1 rounded-full">RemindMe.v2</span>
+        <span className="ml-2 text-xs bg-white/10 px-2 py-1 rounded-full">
+          RemindMe.v2
+        </span>
       </div>
     </footer>
   );

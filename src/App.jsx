@@ -6,6 +6,7 @@ import Login from "./Pages/auth/login";
 import Register from "./Pages/auth/register";
 import DashboardLayout from "./Layout/dashboardLayout";
 import AdminDashboard from "./Pages/admin/AdminDashboard";
+import MahasiswaDashboard from "./Pages/mahasiswa/MahasiswaDashboard";
 
 function App() {
   return (
@@ -48,7 +49,7 @@ function App() {
 
         {/* MAHASISwA ROUTES */}
         <Route path="mahasiswa" element={<DashboardLayout />}>
-          <Route index element={"MahasiswaDashboard"} />
+          <Route index element={<MahasiswaDashboard />} />
 
           <Route path="profile">
             <Route index element={"MahasiswaProfile"} />

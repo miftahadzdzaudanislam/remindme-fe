@@ -54,14 +54,15 @@ export default function Sidebar({ onToggle }) {
       <motion.aside
         animate={{ width: open ? 256 : 80 }}
         transition={{ duration: 0.25 }}
-        className={`fixed left-0 top-0 z-40 flex h-screen flex-col bg-white shadow-lg
-          ${
-            mobileOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0`}
+        className={`fixed left-0 top-0 z-40 flex h-screen flex-col bg-white shadow-lg rounded-r-xl md:rounded-r-none ${
+          mobileOpen
+            ? "translate-x-0 transition duration-150"
+            : "-translate-x-full transition duration-150"
+        } md:translate-x-0`}
       >
         {/* Header */}
         <div
-          className={`flex h-16 items-center justify-between border-b px-4 ${
+          className={`flex h-16 items-center justify-between border-b mx-4 ${
             open ? "" : "justify-center"
           }`}
         >
@@ -72,16 +73,13 @@ export default function Sidebar({ onToggle }) {
                 className="h-9 w-9 rounded"
                 alt="logo"
               />
-              <div>
-                <p className="font-semibold text-primary">RemindMe</p>
-                <p className="text-xs text-gray-500">Admin Panel</p>
-              </div>
+              <p className="font-semibold text-primary text-xl">RemindMe</p>
             </div>
           )}
 
           <button
             onClick={toggleSidebar}
-            className="hidden rounded-lg p-2 hover:bg-gray-100 md:block"
+            className="hidden rounded-lg p-2 text-primary hover:bg-gray-100 md:block"
           >
             <Menu size={18} />
           </button>
@@ -89,6 +87,9 @@ export default function Sidebar({ onToggle }) {
 
         {/* Menu */}
         <nav className="flex-1 p-3">
+          <p className="text-xs font-semibold text-gray-400 uppercase py-1.5 ms-3">
+            menu
+          </p>
           <ul className="space-y-1">
             {menus.map(({ label, icon: Icon, to }) => (
               <li key={label}>
@@ -135,7 +136,7 @@ export default function Sidebar({ onToggle }) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
                 className={`absolute bottom-14 z-50 w-48 rounded-xl border bg-white shadow-lg
-                  ${open ? "left-3" : "left-[72px]"}`}
+                  ${open ? "left-3" : "left-18"}`}
               >
                 <Link
                   to="/profile"

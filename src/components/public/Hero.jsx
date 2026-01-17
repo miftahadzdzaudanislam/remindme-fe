@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function MainHero() {
+export default function Hero() {
   const slides = [
     {
       tag: "FITUR UNGGUlAN",
@@ -28,7 +28,7 @@ export default function MainHero() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(timer);
   }, [slides.length]);
@@ -39,7 +39,7 @@ export default function MainHero() {
       className="bg-linear-to-br from-secondary to-primary text-white rounded-br-verybig overflow-hidden pb-20 pt-8"
     >
       <div className="max-w-7xl mx-auto px-13 md:px-25">
-        <div className="relative mt-20 max-w-full mx-auto h-[420px] overflow-hidden">
+        <div className="relative mt-20 max-w-full mx-auto h-105 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={current}
@@ -95,8 +95,8 @@ export default function MainHero() {
               <button
                 key={index}
                 onClick={() => setCurrent(index)}
-                className={`h-2.5 w-2.5 rounded-full transition ${
-                  index === current ? "bg-white" : "bg-white/40"
+                className={`h-2.5 rounded-full transition ${
+                  index === current ? "bg-white w-6" : "bg-white/40 w-2.5"
                 }`}
               />
             ))}

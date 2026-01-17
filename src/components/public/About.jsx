@@ -84,7 +84,9 @@ export default function About() {
           </h2>
 
           <p className="mt-4 text-gray-600">
-            Kami hadir untuk membantu mahasiswa mengelola tugas dan jadwal kuliah dengan lebih mudah. Dengan pengingat otomatis dan integrasi Email, kamu nggak perlu takut lagi lupa deadline.
+            Kami hadir untuk membantu mahasiswa mengelola tugas dan jadwal
+            kuliah dengan lebih mudah. Dengan pengingat otomatis dan integrasi
+            Email, kamu nggak perlu takut lagi lupa deadline.
           </p>
         </motion.div>
       </div>

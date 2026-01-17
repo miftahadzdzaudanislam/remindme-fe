@@ -17,7 +17,7 @@ export default function DashboardLayout() {
         }`}
       >
         {/* Header */}
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white px-6 shadow-sm">
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white pe-6 ps-20 shadow-sm md:p-6">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold text-gray-800">
               Dashboard Admin
@@ -31,7 +31,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* Page Content */}
-        <main className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-indigo-50 via-white to-emerald-50">
+        <main className="min-h-[calc(100vh-4rem)] bg-linear-to-br from-indigo-50 via-white to-emerald-50">
           <Outlet />
         </main>
       </div>
