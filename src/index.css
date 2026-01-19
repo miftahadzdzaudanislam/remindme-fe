@@ -1,18 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Gothic+A1&family=Oxanium:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Gothic+A1&family=Oxanium:wght@200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1E63B0;
-  --color-secondary: #3B76BA;
-  --color-light: #F1F0FE;
-  --color-dark: #1F2937;
+  --color-primary: #1e63b0;
+  --color-primary-hover: #1651a0;
+  --color-primary-light: #e6eff7;
 
-  --color-success: #22C55E;
-  --color-danger:  #EF4444;
-  --color-warning: #F59E0B;
-  --color-info:    #0EA5E9;
+  --color-secondary: #3b76ba;
+  --color-secondary-hover: #2e5fa3;
+  --color-secondary-light: #edf3fb;
+
+  --color-light: #f1f0fe;
+  --color-dark: #1f2937;
+
+  --color-success: #22c55e;
+  --color-success-hover: #16a34a;
+  --color-success-light: #dcfce7;
+
+  --color-danger: #ef4444;
+  --color-danger-hover: #dc2626;
+  --color-danger-light: #fee2e2;
+
+  --color-warning: #f59e0b;
+  --color-warning-hover: #d97706;
+  --color-warning-light: #fef3c7;
+
+  --color-info: #0ea5e9;
+  --color-info-hover: #0284c7;
+  --color-info-light: #e0f2fe;
 
   --default-font-family: "Poppins";
-  
-  --radius-verybig: 200px
+
+  --radius-verybig: 200px;
 }

@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Link as ScrollLink } from "react-scroll";
+import MenuItem from "../ui/menuItem";
+import { useMenuState } from "../../_hooks/utils/useMenuState";
+import { useScrollToSection } from "../../_hooks/utils/useScrollToSection";
+import { useScrollDetection } from "../../_hooks/utils/useScrollDetection";
 
 export default function MainHeader() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
   const menus = [
     { label: "Home", id: "hero" },
     { label: "Task", id: "task" },
@@ -14,48 +13,12 @@ export default function MainHeader() {
     { label: "About", id: "about" },
   ];
 
-  // Detect scroll
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { isOpen, toggleMenu, closeMenu } = useMenuState();
+  const { scrollToSection } = useScrollToSection();
+  const { scrolled, activeId } = useScrollDetection(menus);
 
-  // Menu Navbar
-  const MenuItem = ({ id, label, isMobile = false }) => {
-    const baseClass = isMobile
-      ? "block py-4 transition border-b border-gray-300"
-      : "px-5 py-2 rounded-3xl transition";
-
-    const activeClass = isMobile
-      ? "bg-primary text-white"
-      : scrolled
-      ? "bg-primary text-white"
-      : "bg-light/30 text-white";
-
-    const inactiveClass = isMobile
-      ? "text-primary hover:bg-gray-100"
-      : scrolled
-      ? "text-primary"
-      : "text-light";
-
-    return (
-      <ScrollLink
-        to={id}
-        spy={true}
-        smooth={true}
-        offset={-80}
-        duration={500}
-        onClick={() => isMobile && setIsOpen(false)}
-        activeClass={activeClass
-          .split(" ")
-          .filter((c) => !inactiveClass.includes(c))
-          .join(" ")}
-        className={`${baseClass} cursor-pointer ${inactiveClass}`}
-      >
-        {label}
-      </ScrollLink>
-    );
+  const handleMenuClick = (id, isMobile = false) => {
+    scrollToSection(id, isMobile, closeMenu);
   };
 
   return (
@@ -69,23 +32,18 @@ export default function MainHeader() {
           boxShadow: scrolled ? "0 4px 12px rgba(0,0,0,0.08)" : "none",
         }}
         transition={{ duration: 0.3 }}
-        onScroll={() => setScrolled(window.scrollY > 20)}
       >
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex items-center h-20">
             {/* Logo */}
-            <Link className="flex items-center gap-1 mx-auto md:mx-0" href="#">
+            <Link className="flex items-center gap-1 mx-auto md:mx-0" to="/">
               <img
                 src="/images/logo-remindme.png"
-                className={`h-10 transition ${
-                  scrolled ? "" : "brightness-0 invert"
-                }`}
+                className={`h-10 transition ${scrolled ? "" : "brightness-0 invert"}`}
                 alt="RemindMe Logo"
               />
               <span
-                className={`font-semibold text-xl ${
-                  scrolled ? "text-primary" : "text-white"
-                }`}
+                className={`font-semibold text-xl ${scrolled ? "text-primary" : "text-white"}`}
               >
                 RemindMe
               </span>
@@ -95,7 +53,13 @@ export default function MainHeader() {
             <ul className="hidden md:flex ml-auto gap-3 font-medium">
               {menus.map((m) => (
                 <li key={m.id}>
-                  <MenuItem id={m.id} label={m.label} />
+                  <MenuItem
+                    id={m.id}
+                    label={m.label}
+                    isActive={activeId === m.id}
+                    scrolled={scrolled}
+                    onClick={(id) => handleMenuClick(id, false)}
+                  />
                 </li>
               ))}
               <li>
@@ -103,7 +67,7 @@ export default function MainHeader() {
                   to="/login"
                   className={`px-4 py-2 rounded-2xl transition ${
                     scrolled
-                      ? "text-white bg-primary hover:bg-secondary"
+                      ? "text-white bg-primary hover:bg-primary-hover"
                       : "text-primary bg-light hover:bg-white"
                   }`}
                 >
@@ -113,9 +77,7 @@ export default function MainHeader() {
               <li>
                 <Link
                   to="/register"
-                  className={`px-4 py-1 rounded-lg transition ${
-                    scrolled ? "text-primary" : "text-white"
-                  }`}
+                  className={`px-4 py-1 rounded-lg transition ${scrolled ? "text-primary" : "text-white"}`}
                 >
                   Register
                 </Link>
@@ -124,7 +86,7 @@ export default function MainHeader() {
 
             {/* Burger Button */}
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={toggleMenu}
               className="md:hidden absolute right-4 w-10 h-10 flex items-center justify-start"
               aria-label="Toggle menu"
             >
@@ -137,8 +99,8 @@ export default function MainHeader() {
                     i === 0
                       ? `w-6 ${isOpen ? "rotate-45" : "-translate-y-2"}`
                       : i === 1
-                      ? `w-8 ${isOpen ? "opacity-0" : ""}`
-                      : `w-6 ${isOpen ? "-rotate-45" : "translate-y-2"}`
+                        ? `w-8 ${isOpen ? "opacity-0" : ""}`
+                        : `w-6 ${isOpen ? "-rotate-45" : "translate-y-2"}`
                   }`}
                 />
               ))}
@@ -153,14 +115,12 @@ export default function MainHeader() {
           <>
             <motion.div
               className="fixed inset-0 md:hidden bg-black/30 z-40 mt-20"
-              onClick={() => setIsOpen(false)}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
-
             <motion.div
-              className="fixed top-20 left-3 right-3 md:hidden bg-light rounded-b-2xl z-50 shadow-lg"
+              className="fixed top-20 left-3 right-3 md:hidden bg-light rounded-b-2xl z-50 shadow-lg overflow-hidden"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -169,12 +129,20 @@ export default function MainHeader() {
               <ul className="text-center font-medium">
                 {menus.map((m) => (
                   <li key={m.id}>
-                    <MenuItem id={m.id} label={m.label} isMobile />
+                    <MenuItem
+                      id={m.id}
+                      label={m.label}
+                      isActive={activeId === m.id}
+                      isMobile
+                      scrolled={scrolled}
+                      onClick={(id) => handleMenuClick(id, true)}
+                    />
                   </li>
                 ))}
                 <li>
                   <Link
                     to="/login"
+                    onClick={closeMenu}
                     className="block py-4 transition text-primary border-b border-gray-300"
                   >
                     Login
@@ -183,6 +151,7 @@ export default function MainHeader() {
                 <li>
                   <Link
                     to="/register"
+                    onClick={closeMenu}
                     className="block py-4 transition text-primary"
                   >
                     Register

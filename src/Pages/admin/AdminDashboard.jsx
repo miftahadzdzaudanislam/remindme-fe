@@ -1,20 +1,21 @@
 import { BookOpen, CheckSquare, ClipboardList, Users } from "lucide-react";
 import { motion } from "framer-motion";
-import PageTitle from "../../components/ui/pageTitle";
-import StatCard from "../../components/ui/statCard";
+import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
+import StatCard from "@/components/ui/statCard";
+import Badge from "@/components/ui/badge";
 
 export default function AdminDashboard() {
+  useDocumentTitle("Dashboard Admin");
+
   return (
     <>
-      <PageTitle title="Dashboard Admin" />
-
       <motion.div
         initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
           transition: { staggerChildren: 0.15 },
         }}
-        className="min-h-screen space-y-6 rounded-xl bg-linear-to-br from-indigo-50 via-white to-emerald-50 p-6"
+        className="min-h-screen space-y-6 rounded-xl p-6"
       >
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -76,9 +77,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="whitespace-nowrap rounded-full border bg-danger/40 px-3 py-1 text-xs font-medium text-red-800">
-                  Admin
-                </div>
+                <Badge value="Admin" variant={"danger"} size="md" />
               </div>
             </div>
 
@@ -94,9 +93,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="whitespace-nowrap rounded-full border bg-danger/40 px-3 py-1 text-xs font-medium text-red-800">
-                  Admin
-                </div>
+                <Badge value="Admin" variant={"danger"} size="md" />
               </div>
             </div>
           </div>

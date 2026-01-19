@@ -13,10 +13,12 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useState } from "react";
-import InputFieldAuth from "../../components/ui/input";
-import PageTitle from "../../components/ui/pageTitle";
+import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
+import InputFieldAuth from "@/components/ui/input";
 
 export default function Register() {
+  useDocumentTitle("Register");
+
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -27,8 +29,6 @@ export default function Register() {
 
   return (
     <>
-      <PageTitle title={"Register"} />
-
       <div className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-secondary to-blue-700 p-4 overflow-hidden">
         {/* Background Ornaments */}
         <motion.div

@@ -2,10 +2,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import InputFieldAuth from "../../components/ui/input";
-import PageTitle from "../../components/ui/pageTitle";
+import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
+import InputFieldAuth from "@/components/ui/input";
 
 export default function Login() {
+  useDocumentTitle("Login");
+
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -16,8 +18,6 @@ export default function Login() {
 
   return (
     <>
-      <PageTitle title={"Login"} />
-
       <div className="relative min-h-screen bg-linear-to-br from-secondary to-blue-700 flex items-center justify-center p-4 overflow-hidden">
         {/* Back Button */}
         <motion.button

@@ -1,7 +1,7 @@
 import { Calendar, CheckSquare, TrendingUp } from "lucide-react";
-import StatCard from "../../components/ui/statCard";
 import { motion } from "framer-motion";
-import PageTitle from "../../components/ui/pageTitle";
+import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
+import StatCard from "@/components/ui/statCard";
 
 const container = {
   hidden: { opacity: 0 },
@@ -12,10 +12,10 @@ const container = {
 };
 
 export default function MahasiswaDashboard() {
+  useDocumentTitle("Dashboard Mahasiswa");
+
   return (
     <>
-      <PageTitle title={"Dashboard Mahasiswa"} />
-
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

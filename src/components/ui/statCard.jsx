@@ -12,7 +12,7 @@ export default function StatCard({
       whileHover={{ scale: 1.02 }}
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4, ease: "easeIn" }}
+      transition={{ duration: 0.2, ease: "easeIn" }}
       className={`rounded-2xl border p-5 shadow-md ${color}`}
     >
       <div className="mb-3 flex items-center gap-3">
