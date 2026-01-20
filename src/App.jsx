@@ -1,15 +1,15 @@
+import NotFound from "@/components/NotFoundPage";
+import DashboardLayout from "@/layout/DashboardLayout";
+import PublicLayout from "@/layout/PublicLayout";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminCourse from "@/pages/admin/courses/AdminCourse";
+import AdminTask from "@/pages/admin/tasks/AdminTask";
+import AdminUser from "@/pages/admin/users/AdminUser";
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
+import Home from "@/pages/Home";
+import MahasiswaDashboard from "@/pages/mahasiswa/MahasiswaDashboard";
 import { Route, Routes } from "react-router-dom";
-import PublicLayout from "./layout/publicLayout";
-import Home from "./pages/Home";
-import NotFound from "./components/NotFound";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
-import DashboardLayout from "./layout/dashboardLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import MahasiswaDashboard from "./pages/mahasiswa/MahasiswaDashboard";
-import AdminUsers from "./pages/admin/users/AdminUser";
-import AdminCourse from "./pages/admin/courses/AdminCourse";
-import AdminTask from "./pages/admin/tasks/AdminTask";
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
           </Route>
 
           <Route path="users">
-            <Route index element={<AdminUsers />} />
+            <Route index element={<AdminUser />} />
             <Route path="create" element={"CreateUser"} />
             <Route path="details/:id" element={"DetailUser"} />
             <Route path="details/:id/login-history" element={"UserHistory"} />

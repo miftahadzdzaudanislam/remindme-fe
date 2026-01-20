@@ -1,6 +1,6 @@
+import BaseModal from "@/components/BaseModal";
 import { AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
-import BaseModal from "./BaseModal";
 
 export default function ChangeStatusModal({
   open,
