@@ -1,5 +1,5 @@
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import DeleteModal from "@/components/DeleteModal_temp";
+import DeleteModal from "@/components/DeleteModal";
 import { DUMMY_COURSES, DUMMY_USERS } from "@/utils/dataDummy";
 import { CONFIG } from "@/utils/tableConfig";
 import { BookOpen, Edit, Loader2, Trash2 } from "lucide-react";

@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Users, Edit, Trash2, Loader2 } from "lucide-react";
-import Badge from "@/components/ui/Badge_temp";
+import Badge from "@/components/ui/Badge";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import DataTable from "react-data-table-component";
-import ChangeStatusModal from "@/components/ChangeStatusModal_temp";
-import DeleteUserModal from "@/components/DeleteUserModal_temp";
+import ChangeStatusModal from "@/components/ChangeStatusModal";
+import DeleteUserModal from "@/components/DeleteUserModal";
 import { CONFIG } from "@/utils/tableConfig";
 import { DUMMY_USERS } from "@/utils/dataDummy";
 
