@@ -114,7 +114,7 @@ export default function MainHeader() {
         {isOpen && (
           <>
             <motion.div
-              className="fixed inset-0 md:hidden bg-black/30 z-40 mt-20"
+              className="fixed inset-0 md:hidden bg-dark/30 z-40 mt-20"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

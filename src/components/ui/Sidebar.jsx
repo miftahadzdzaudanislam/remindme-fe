@@ -21,7 +21,7 @@ export default function Sidebar({ onToggle }) {
   const menus = [
     { label: "Dashboard", icon: Home, to: "/admin" },
     { label: "Mahasiswa", icon: Users, to: "/admin/users" },
-    { label: "Mata Kuliah", icon: BookOpen, to: "/admin/courses" },
+    { label: "Jadwal", icon: BookOpen, to: "/admin/courses" },
     { label: "Tugas", icon: CheckSquare, to: "/admin/tasks" },
   ];
 
@@ -45,7 +45,7 @@ export default function Sidebar({ onToggle }) {
       {/* Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/30 md:hidden"
+          className="fixed inset-0 z-30 bg-dark/30 md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}

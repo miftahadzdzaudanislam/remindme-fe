@@ -4,97 +4,55 @@ import { Users, Edit, Trash2, Loader2 } from "lucide-react";
 import Badge from "@/components/ui/badge";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import DataTable from "react-data-table-component";
-
-const DUMMY_USERS = [
-  {
-    id: 1,
-    nama: "John Doe",
-    email: "john@example.com",
-    nim: "2021001",
-    jurusan: "ti",
-    role: "mahasiswa",
-    status: "active",
-    terakhirLogin: "2025-01-18",
-  },
-  {
-    id: 2,
-    nama: "Jane Smith",
-    email: "jane@example.com",
-    nim: "2021002",
-    jurusan: "si",
-    role: "mahasiswa",
-    status: "active",
-    terakhirLogin: "2025-01-17",
-  },
-  {
-    id: 3,
-    nama: "Bob Johnson",
-    email: "bob@example.com",
-    nim: "2021003",
-    jurusan: "ti",
-    role: "admin",
-    status: "inactive",
-    terakhirLogin: "2025-01-05",
-  },
-  {
-    id: 4,
-    nama: "Alice Brown",
-    email: "alice@example.com",
-    nim: "2021004",
-    jurusan: "bd",
-    role: "mahasiswa",
-    status: "suspended",
-    terakhirLogin: "2024-12-20",
-  },
-];
-
-const jurusanMap = {
-  ti: "Teknik Informatika",
-  si: "Sistem Informasi",
-  bd: "Bisnis Digital",
-};
-
-const tableStyles = {
-  cells: {
-    style: {
-      paddingTop: "14px",
-      paddingBottom: "14px",
-    },
-  },
-  headCells: {
-    style: {
-      backgroundColor: "var(--color-primary, #2563eb)",
-      color: "#fff",
-      fontWeight: 700,
-    },
-  },
-};
+import ChangeStatusModal from "@/components/changeStatusModal";
+import DeleteUserModal from "@/components/deleteUserModal";
+import { CONFIG } from "@/utils/tableConfig";
+import { DUMMY_USERS } from "@/utils/dataDummy";
 
 export default function AdminUser() {
   useDocumentTitle("Kelola Mahasiswa");
+
   const [activeTab, setActiveTab] = useState("semua");
   const [users, setUsers] = useState(DUMMY_USERS);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const filteredUsers = useMemo(() => {
     if (activeTab === "semua") return users;
-    const statusMap = {
-      aktif: "active",
-      tidakaktif: "inactive",
-      suspended: "suspended",
-    };
-    return users.filter((u) => u.status === statusMap[activeTab]);
+
+    const tab = CONFIG.tabs.find((t) => t.id === activeTab);
+
+    return users.filter((u) => u.status === tab?.status);
   }, [users, activeTab]);
 
-  const deleteUser = (id) => {
-    if (window.confirm("Apakah Anda yakin ingin menghapus user ini?")) {
-      setUsers((prev) => prev.filter((u) => u.id !== id));
-    }
+  const openModal = (user, type) => {
+    setSelectedUser(user);
+    type === "status" ? setStatusModalOpen(true) : setDeleteModalOpen(true);
+  };
+
+  const closeModals = () => {
+    setStatusModalOpen(false);
+    setDeleteModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleChangeStatus = ({ status }) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === selectedUser.id ? { ...u, status } : u)),
+    );
+    closeModals();
+  };
+
+  const handleDeleteUser = () => {
+    setUsers((prev) => prev.filter((u) => u.id !== selectedUser.id));
+    closeModals();
   };
 
   const columns = [
     {
       name: "No.",
-      cell: (row, index) => index + 1,
+      cell: (_, index) => index + 1,
       sortable: false,
       width: "60px",
     },
@@ -119,106 +77,99 @@ export default function AdminUser() {
     },
     {
       name: "Jurusan",
-      selector: (row) => jurusanMap[row.jurusan] || row.jurusan,
+      selector: (row) => CONFIG.jurusanMap[row.jurusan] || row.jurusan,
       sortable: true,
       wrap: true,
     },
     {
       name: "Role",
-      selector: (row) => row.role,
+      cell: (row) => {
+        const userRole = row.role || "mahasiswa";
+        const variant = userRole === "admin" ? "danger" : "info";
+        return <Badge value={userRole} variant={variant} size="sm" />;
+      },
       sortable: true,
       width: "120px",
     },
     {
       name: "Status",
-      selector: (row) => row.status,
-      sortable: true,
       cell: (row) => (
         <Badge
           value={row.status}
-          variant={
-            row.status === "active"
-              ? "success"
-              : row.status === "inactive"
-                ? "warning"
-                : "danger"
-          }
+          variant={CONFIG.userStatusVariant[row.status]}
           size="sm"
         />
       ),
-      width: "140px",
+      sortable: true,
+      width: "110px",
     },
     {
       name: "Aksi",
       cell: (row) => (
-        <div className="flex justify-end gap-2 w-full">
-          <Link
-            to={`${row.id}/edit`}
-            className="text-warning hover:text-warning-hover"
+        <div className="flex justify-center gap-2 w-full">
+          <button
+            onClick={() => openModal(row, "status")}
+            className="text-primary hover:text-primary-hover"
+            title="Ubah Status"
           >
             <Edit size={18} />
-          </Link>
+          </button>
           <button
-            onClick={() => deleteUser(row.id)}
-            className="text-danger hover:text-danger-hover"
+            onClick={() => openModal(row, "delete")}
+            className="text-danger hover:text-danger-hover cursor-pointer"
+            title="Hapus User"
           >
             <Trash2 size={18} />
           </button>
         </div>
       ),
-      width: "70px",
+      width: "90px",
       ignoreRowClick: true,
-      style: { justifyContent: "flex-end" },
     },
   ];
 
-  const tabs = ["semua", "aktif", "tidakaktif", "suspended"];
-
   return (
     <div className="min-h-screen space-y-4 rounded-xl p-3 md:p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Header */}
+      <div className="flex flex-col justify-between mb-10 items-start gap-4 md:items-center md:flex-row">
         <h1 className="flex text-xl md:text-2xl font-bold text-primary gap-2 md:gap-3 items-center">
           <Users size={24} className="md:w-7 md:h-7" />
           <span>Daftar Mahasiswa</span>
         </h1>
         <Link
           to="create"
-          className="inline-flex items-center px-3 md:px-4 py-2 rounded-lg transition text-white bg-primary hover:bg-primary-hover text-xs md:text-sm font-medium w-full md:w-auto justify-center"
+          className="inline-flex items-center justify-center px-3 py-2 rounded-lg transition font-medium text-xs text-white bg-primary drop-shadow-2xl shadow-primary hover:scale-105 hover:bg-primary-hover md:text-sm w-full md:w-auto md:px-4"
         >
           Tambah User +
         </Link>
       </div>
 
+      {/* Tabs */}
       <div className="flex rounded-lg bg-gray-200 p-1 gap-1 overflow-x-auto">
-        {tabs.map((tab) => (
+        {CONFIG.tabs.map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
             className={`flex-1 rounded-lg px-2 md:px-4 py-2 transition font-medium text-xs md:text-sm whitespace-nowrap ${
-              activeTab === tab
+              activeTab === tab.id
                 ? "bg-primary shadow text-light"
                 : "text-gray-700 hover:text-gray-900 hover:bg-gray-300"
             }`}
           >
-            {tab === "semua"
-              ? "Semua"
-              : tab === "aktif"
-                ? "Aktif"
-                : tab === "tidakaktif"
-                  ? "Tidak Aktif"
-                  : "Suspended"}
+            {tab.label}
           </button>
         ))}
       </div>
 
-      <div className="max-w-110 overflow-x-auto md:min-w-full">
+      {/* Table */}
+      <div className="max-w-110 overflow-x-auto md:min-w-full rounded-lg border border-gray-200">
         <DataTable
           columns={columns}
           data={filteredUsers}
           pagination
           paginationServer
           paginationPerPage={10}
-          paginationRowsPerPageOptions={[10, 20, 50]}
+          paginationRowsPerPageOptions={[10, 25, 50]}
           noDataComponent={
             <div className="py-8 text-gray-500">Tidak ada data mahasiswa</div>
           }
@@ -230,9 +181,23 @@ export default function AdminUser() {
           responsive
           striped
           highlightOnHover
-          customStyles={tableStyles}
+          customStyles={CONFIG.tableStyles}
         />
       </div>
+
+      {/* Modals */}
+      <ChangeStatusModal
+        open={statusModalOpen}
+        currentStatus={selectedUser?.status}
+        onClose={closeModals}
+        onConfirm={handleChangeStatus}
+      />
+
+      <DeleteUserModal
+        open={deleteModalOpen}
+        onClose={closeModals}
+        onConfirm={handleDeleteUser}
+      />
     </div>
   );
 }

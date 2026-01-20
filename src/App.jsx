@@ -8,6 +8,8 @@ import DashboardLayout from "./Layout/dashboardLayout";
 import AdminDashboard from "./Pages/admin/AdminDashboard";
 import MahasiswaDashboard from "./Pages/mahasiswa/MahasiswaDashboard";
 import AdminUsers from "./Pages/admin/users/AdminUser";
+import AdminCourse from "./Pages/admin/courses/AdminCourse";
+import AdminTask from "./Pages/admin/tasks/AdminTask";
 
 function App() {
   return (
@@ -34,14 +36,14 @@ function App() {
           </Route>
 
           <Route path="courses">
-            <Route index element={"DaftarCourses"} />
+            <Route index element={<AdminCourse />} />
             <Route path="create" element={"CreateCourse"} />
             <Route path="edit/:id" element={"EditCourse"} />
             <Route path="details/:id" element={"DetailCourse"} />
           </Route>
 
           <Route path="tasks">
-            <Route index element={"DaftarTasks"} />
+            <Route index element={<AdminTask />} />
             <Route path="create" element={"CreateTask"} />
             <Route path="edit/:id" element={"EditTask"} />
             <Route path="details/:id" element={"DetailTask"} />
