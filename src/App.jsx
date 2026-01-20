@@ -1,14 +1,14 @@
 import NotFound from "@/components/NotFoundPage";
 import DashboardLayout from "@/layout/DashboardLayout_temp";
 import PublicLayout from "@/layout/PublicLayout_temp";
-import AdminDashboard from "@/pages/admin/AdminDashboard";
-import AdminCourse from "@/pages/admin/courses/AdminCourse";
-import AdminTask from "@/pages/admin/tasks/AdminTask";
-import AdminUser from "@/pages/admin/users/AdminUser";
-import Login from "@/pages/auth/Login_temp";
-import Register from "@/pages/auth/Register_temp";
-import Home from "@/pages/Home";
-import MahasiswaDashboard from "@/pages/mahasiswa/MahasiswaDashboard";
+import AdminDashboard from "@/pages_temp/admin/AdminDashboard";
+import AdminCourse from "@/pages_temp/admin/courses/AdminCourse";
+import AdminTask from "@/pages_temp/admin/tasks/AdminTask";
+import AdminUser from "@/pages_temp/admin/users/AdminUser";
+import Login from "@/pages_temp/auth/Login_temp";
+import Register from "@/pages_temp/auth/Register_temp";
+import Home from "@/pages_temp/Home";
+import MahasiswaDashboard from "@/pages_temp/mahasiswa/MahasiswaDashboard";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
