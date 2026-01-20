@@ -1,5 +1,5 @@
 import { AlertOctagon } from "lucide-react";
-import BaseModal from "./BaseModal";
+import BaseModal from "./baseModal";
 
 export default function DeleteUserModal({ open, onClose, onConfirm }) {
   return (
