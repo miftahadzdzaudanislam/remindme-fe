@@ -1,7 +1,7 @@
 import { Calendar, CheckSquare, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import StatCard from "@/components/ui/StatCard";
+import StatCard from "@/components/ui/StatCard_temp";
 
 const container = {
   hidden: { opacity: 0 },

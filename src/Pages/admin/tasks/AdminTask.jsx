@@ -1,6 +1,6 @@
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import DeleteModal from "@/components/DeleteModal";
-import Badge from "@/components/ui/Badge";
+import DeleteModal from "@/components/DeleteModal_temp";
+import Badge from "@/components/ui/Badge_temp";
 import { DUMMY_TASKS, DUMMY_USERS, DUMMY_COURSES } from "@/utils/dataDummy";
 import { formatDate } from "@/utils/dataFormatter";
 import { CONFIG } from "@/utils/tableConfig";

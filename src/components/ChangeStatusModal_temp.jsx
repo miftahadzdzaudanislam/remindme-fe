@@ -1,4 +1,4 @@
-import BaseModal from "@/components/BaseModal";
+import BaseModal from "@/components/BaseModal_temp";
 import { AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 
