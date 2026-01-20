@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import InputFieldAuth from "@/components/ui/input";
+import InputFieldAuth from "@/components/ui/UserInput";
 
 export default function Register() {
   useDocumentTitle("Register");

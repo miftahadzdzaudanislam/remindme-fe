@@ -1,15 +1,15 @@
 import { Route, Routes } from "react-router-dom";
-import PublicLayout from "./Layout/publicLayout";
-import Home from "./Pages/Home";
-import NotFound from "./components/notfound";
-import Login from "./Pages/auth/Login";
-import Register from "./Pages/auth/Register";
-import DashboardLayout from "./Layout/dashboardLayout";
-import AdminDashboard from "./Pages/admin/AdminDashboard";
-import MahasiswaDashboard from "./Pages/mahasiswa/MahasiswaDashboard";
-import AdminUsers from "./Pages/admin/users/AdminUser";
-import AdminCourse from "./Pages/admin/courses/AdminCourse";
-import AdminTask from "./Pages/admin/tasks/AdminTask";
+import PublicLayout from "./layout/publicLayout";
+import Home from "./pages/Home";
+import NotFound from "./components/NotFound";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import DashboardLayout from "./layout/dashboardLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import MahasiswaDashboard from "./pages/mahasiswa/MahasiswaDashboard";
+import AdminUsers from "./pages/admin/users/AdminUser";
+import AdminCourse from "./pages/admin/courses/AdminCourse";
+import AdminTask from "./pages/admin/tasks/AdminTask";
 
 function App() {
   return (
@@ -31,6 +31,7 @@ function App() {
 
           <Route path="users">
             <Route index element={<AdminUsers />} />
+            <Route path="create" element={"CreateUser"} />
             <Route path="details/:id" element={"DetailUser"} />
             <Route path="details/:id/login-history" element={"UserHistory"} />
           </Route>

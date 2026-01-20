@@ -1,8 +1,8 @@
 import { BookOpen, CheckSquare, ClipboardList, Users } from "lucide-react";
 import { motion } from "framer-motion";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import StatCard from "@/components/ui/statCard";
-import Badge from "@/components/ui/badge";
+import StatCard from "@/components/ui/StatCard";
+import Badge from "@/components/ui/Badge";
 import { DUMMY_USERS } from "@/utils/dataDummy";
 import { CONFIG } from "@/utils/tableConfig";
 import { formatDate } from "@/utils/dataFormatter";

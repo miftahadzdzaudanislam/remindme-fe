@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import MenuItem from "../ui/menuItem";
+import MenuItem from "../ui/MenuItem";
 import { useMenuState } from "../../_hooks/utils/useMenuState";
 import { useScrollToSection } from "../../_hooks/utils/useScrollToSection";
 import { useScrollDetection } from "../../_hooks/utils/useScrollDetection";

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import InputFieldAuth from "@/components/ui/input";
+import InputFieldAuth from "@/components/ui/UserInput";
 
 export default function Login() {
   useDocumentTitle("Login");
