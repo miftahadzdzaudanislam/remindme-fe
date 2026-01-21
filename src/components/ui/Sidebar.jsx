@@ -139,7 +139,7 @@ export default function Sidebar({ onToggle }) {
                   ${open ? "left-3" : "left-18"}`}
               >
                 <Link
-                  to="/profile"
+                  to="profile"
                   className="flex items-center gap-2 px-4 py-3 rounded-t-xl hover:bg-gray-100"
                 >
                   <User size={16} /> Profile

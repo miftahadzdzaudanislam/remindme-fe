@@ -12,16 +12,13 @@ import {
   EyeOff,
   ArrowLeft,
 } from "lucide-react";
-import { useState } from "react";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import InputFieldAuth from "@/components/ui/UserInput";
+import UserInput from "@/components/ui/UserInput";
 
 export default function Register() {
   useDocumentTitle("Register");
 
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle register logic
@@ -46,11 +43,11 @@ export default function Register() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login")}
           className="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition"
         >
           <ArrowLeft size={18} />
-          <span className="text-sm font-medium">Back to Home</span>
+          <span className="text-sm font-medium">Kembali ke Login</span>
         </motion.button>
 
         {/* Card */}
@@ -65,23 +62,23 @@ export default function Register() {
               <UserPlus size={28} />
             </div>
             <h1 className="text-3xl font-bold text-light">
-              Create your account
+              Buat Akun
             </h1>
-            <p className="text-sm text-dark mt-2">Enter your details below</p>
+            <p className="text-sm text-white mt-2">Masukan data dibawah ini</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            <InputFieldAuth
-              label="Full Name"
+            <UserInput
+              label="Nama Lengkap"
               icon={User}
               name="name"
-              placeholder="Enter your full name"
+              placeholder="Masukan nama lengkap anda"
               required
             />
 
             <div className="grid md:grid-cols-2 gap-5">
-              <InputFieldAuth
+              <UserInput
                 label="NIM"
                 icon={Hash}
                 name="nim"
@@ -89,7 +86,7 @@ export default function Register() {
                 required
               />
 
-              <InputFieldAuth
+              <UserInput
                 label="Email"
                 icon={Mail}
                 type="email"
@@ -98,59 +95,47 @@ export default function Register() {
                 required
               />
 
-              <InputFieldAuth label="Jurusan" icon={GraduationCap}>
-                <select
-                  name="jurusan"
-                  className="w-full pl-11 pr-10 py-3 bg-white/70 border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-light/50 transition appearance-none"
-                  required
-                >
-                  <option value="">-- Pilih Jurusan --</option>
-                  <option value="Teknik Informatika">Teknik Informatika</option>
-                  <option value="Sistem Informasi">Sistem Informasi</option>
-                  <option value="Bisnis Digital">Bisnis Digital</option>
-                </select>
-              </InputFieldAuth>
+              <UserInput
+                label="Jurusan"
+                icon={GraduationCap}
+                as="select"
+                name="jurusan"
+                required
+                options={[
+                  { value: "", label: "-- Pilih Jurusan --" },
+                  { value: "ti", label: "Teknik Informatika" },
+                  { value: "si", label: "Sistem Informasi" },
+                  { value: "bd", label: "Bisnis Digital" },
+                ]}
+              />
 
-              <InputFieldAuth
-                label="Phone Number"
+              <UserInput
+                label="Nomor Telepon"
                 icon={Phone}
-                type="number"
-                name="phone_number"
+                type="tel"
+                name="telepon"
                 placeholder="62XXXXXXXXXX"
                 required
               />
 
-              <InputFieldAuth
+              <UserInput
                 label="Password"
                 icon={Lock}
-                type={showPassword ? "text" : "password"}
+                type="password"
                 name="password"
                 placeholder="••••••••"
                 required
-              >
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="••••••••"
-                  className="w-full pl-11 pr-10 py-3 bg-white/70 border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-light/50 transition"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </InputFieldAuth>
+                passwordSuffix
+              />
 
-              <InputFieldAuth
-                label="Confirm Password"
+              <UserInput
+                label="Konfirmasi Password"
                 icon={Lock}
-                type={showPassword ? "text" : "password"}
+                type="password"
                 name="password_confirmation"
                 placeholder="••••••••"
                 required
+                passwordSuffix
               />
             </div>
 
@@ -160,12 +145,12 @@ export default function Register() {
               type="submit"
               className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition shadow-lg"
             >
-              Create Account
+              Buat Akun
             </motion.button>
           </form>
 
           <p className="text-center text-sm text-white/90">
-            Already have an account?{" "}
+            Sudah punya akun?{" "}
             <Link to="/login" className="font-bold text-white hover:underline">
               Log in
             </Link>

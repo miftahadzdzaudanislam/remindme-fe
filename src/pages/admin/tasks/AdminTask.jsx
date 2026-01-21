@@ -1,5 +1,5 @@
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/modal/DeleteModal";
 import Badge from "@/components/ui/Badge";
 import { DUMMY_TASKS, DUMMY_USERS, DUMMY_COURSES } from "@/utils/dataDummy";
 import { formatDate } from "@/utils/dataFormatter";
@@ -82,10 +82,16 @@ export default function AdminTask() {
     },
     {
       name: "Status",
+      selector: (row) => row.is_done,
       cell: (row) => {
         const statusLabel = row.is_done ? "Done" : "Pending";
-        const variant = row.is_done ? "success" : "warning";
-        return <Badge value={statusLabel} variant={variant} size="sm" />;
+        const dotColor = row.is_done ? "bg-success" : "bg-warning";
+        return (
+          <div className="flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${dotColor}`}></span>
+            <span>{statusLabel}</span>
+          </div>
+        );
       },
       sortable: true,
       width: "110px",

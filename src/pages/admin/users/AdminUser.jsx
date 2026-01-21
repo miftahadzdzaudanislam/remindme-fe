@@ -4,10 +4,10 @@ import { Users, Edit, Trash2, Loader2 } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import DataTable from "react-data-table-component";
-import ChangeStatusModal from "@/components/ChangeStatusModal";
-import DeleteUserModal from "@/components/DeleteUserModal";
 import { CONFIG } from "@/utils/tableConfig";
 import { DUMMY_USERS } from "@/utils/dataDummy";
+import DeleteUserModal from "@/components/modal/DeleteUserModal";
+import ChangeStatusModal from "@/components/modal/ChangeStatusModal";
 
 export default function AdminUser() {
   useDocumentTitle("Kelola Mahasiswa");
@@ -83,6 +83,7 @@ export default function AdminUser() {
     },
     {
       name: "Role",
+      selector: (row) => row.role,
       cell: (row) => {
         const userRole = row.role || "mahasiswa";
         const variant = userRole === "admin" ? "danger" : "info";
@@ -93,6 +94,7 @@ export default function AdminUser() {
     },
     {
       name: "Status",
+      selector: (row) => row.status,
       cell: (row) => (
         <Badge
           value={row.status}

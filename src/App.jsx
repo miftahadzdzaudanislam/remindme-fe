@@ -3,8 +3,13 @@ import DashboardLayout from "@/layout/DashboardLayout";
 import PublicLayout from "@/layout/PublicLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminCourse from "@/pages/admin/courses/AdminCourse";
+import AdminCourseCreate from "@/pages/admin/courses/AdminCourseCreate";
+import AdminCourseEdit from "@/pages/admin/courses/AdminCourseEdit";
 import AdminTask from "@/pages/admin/tasks/AdminTask";
+import AdminTaskCreate from "@/pages/admin/tasks/AdminTaskCreate";
+import AdminTaskEdit from "@/pages/admin/tasks/AdminTaskEdit";
 import AdminUser from "@/pages/admin/users/AdminUser";
+import AdminUserCreate from "@/pages/admin/users/AdminUserCreate";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import Home from "@/pages/Home";
@@ -31,22 +36,22 @@ function App() {
 
           <Route path="users">
             <Route index element={<AdminUser />} />
-            <Route path="create" element={"CreateUser"} />
+            <Route path="create" element={<AdminUserCreate />} />
             <Route path="details/:id" element={"DetailUser"} />
             <Route path="details/:id/login-history" element={"UserHistory"} />
           </Route>
 
           <Route path="courses">
             <Route index element={<AdminCourse />} />
-            <Route path="create" element={"CreateCourse"} />
-            <Route path="edit/:id" element={"EditCourse"} />
+            <Route path="create" element={<AdminCourseCreate />} />
+            <Route path="edit/:id" element={<AdminCourseEdit />} />
             <Route path="details/:id" element={"DetailCourse"} />
           </Route>
 
           <Route path="tasks">
             <Route index element={<AdminTask />} />
-            <Route path="create" element={"CreateTask"} />
-            <Route path="edit/:id" element={"EditTask"} />
+            <Route path="create" element={<AdminTaskCreate />} />
+            <Route path="edit/:id" element={<AdminTaskEdit />} />
             <Route path="details/:id" element={"DetailTask"} />
           </Route>
         </Route>

@@ -1,16 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
-import { useState } from "react";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import InputFieldAuth from "@/components/ui/UserInput";
+import UserInput from "@/components/ui/UserInput";
 
 export default function Login() {
   useDocumentTitle("Login");
 
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle login logic here
@@ -29,7 +26,7 @@ export default function Login() {
           className="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white hover:bg-white/30 transition"
         >
           <ArrowLeft size={18} />
-          <span className="text-sm font-medium">Back to Home</span>
+          <span className="text-sm font-medium">Kembali</span>
         </motion.button>
 
         {/* Background Ornaments */}
@@ -56,14 +53,14 @@ export default function Login() {
               <Lock size={28} />
             </div>
             <h1 className="text-3xl font-bold text-light">
-              Welcome to RemindMe
+              Selamat Datang
             </h1>
-            <p className="text-sm text-dark mt-2">Log in to your account</p>
+            <p className="text-sm text-white mt-2">Login untuk masuk</p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            <InputFieldAuth
+            <UserInput
               label="Email"
               icon={Mail}
               type="email"
@@ -72,29 +69,15 @@ export default function Login() {
               required
             />
 
-            <InputFieldAuth
+            <UserInput
               label="Password"
               icon={Lock}
-              type={showPassword ? "text" : "password"}
+              type="password"
               name="password"
               placeholder="••••••••"
               required
-            >
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="••••••••"
-                className="w-full pl-11 pr-10 py-3 bg-white/70 border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-light/50 transition"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </InputFieldAuth>
+              passwordSuffix
+            />
 
             {/* Remember Me */}
             <div className="flex items-center gap-2">
@@ -107,7 +90,7 @@ export default function Login() {
                 htmlFor="remember"
                 className="text-sm text-white/90 cursor-pointer select-none"
               >
-                Remember me
+                Ingatkan saya
               </label>
             </div>
 
@@ -124,12 +107,12 @@ export default function Login() {
 
           {/* Sign Up Link */}
           <p className="text-center text-sm text-white/90">
-            Don't have an account?{" "}
+            Belum punya akun?{" "}
             <Link
               to="/register"
               className="text-white font-bold hover:underline"
             >
-              Sign up
+              Daftar
             </Link>
           </p>
         </motion.div>

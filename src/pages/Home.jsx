@@ -6,8 +6,6 @@ import Task from "@/components/public/Task";
 
 
 export default function Home() {
-  useDocumentTitle("Home");
-
   return (
     <>
       <Hero />
