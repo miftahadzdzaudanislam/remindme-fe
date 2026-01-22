@@ -79,14 +79,14 @@ export default function Feature() {
                 {/* Icon floating */}
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 6 }}
-                  className="absolute -top-8 -right-20 flex w-40 h-40 items-center justify-center rounded-full bg-primary text-white shadow-lg md:h-30 md:w-30"
+                  className="absolute -top-8 -right-20 flex w-30 h-30 items-center justify-center rounded-full bg-primary text-white shadow-lg md:h-30 md:w-30"
                 >
-                  <f.icon className="h-16 w-16" />
+                  <f.icon className="h-13 w-13 md:h-16 md:w-16" />
                 </motion.div>
 
                 {/* Content */}
                 <h4 className="font-bold text-xl text-primary">{f.title}</h4>
-                <p className="text-gray-600 mt-4 w-3/4 md:w-full">{f.desc}</p>
+                <p className="text-gray-600 mt-4 w-full md:w-full">{f.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -114,7 +114,7 @@ export default function Feature() {
                   variants={itemVariants}
                   whileHover={{ scale: 1.1 }}
                 >
-                  <h2 className="text-5xl md:text-4xl font-bold">{s.count}</h2>
+                  <h2 className="text-4xl font-bold">{s.count}</h2>
                   <h4 className="mt-2 md:text-base font-medium text-white">
                     {s.data}
                   </h4>

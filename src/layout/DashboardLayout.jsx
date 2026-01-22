@@ -21,14 +21,14 @@ export default function DashboardLayout() {
           }`}
         >
           {/* Header */}
-          <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white pe-6 ps-20 shadow-sm md:p-6">
+          <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white pe-6 ps-15 shadow-sm md:p-6">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold text-primary">
                 Dashboard Admin
               </h2>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">
+              <span className="text-xs text-gray-600 md:text-sm">
                 Selamat datang, Admin 👋
               </span>
             </div>

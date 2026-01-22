@@ -55,7 +55,7 @@ export default function MahasiswaCourseCreate() {
       <div className="flex justify-center">
         <form
           onSubmit={handleSubmit}
-          className="mx-auto w-4/5 max-w-5xl bg-white rounded-xl border border-gray-200 p-6 shadow-xl space-y-6 md:p-8 lg:w-3/4"
+          className="mx-5 w-full bg-white rounded-xl border border-gray-200 p-6 shadow-xl space-y-6 md:p-8 lg:w-3/4"
         >
 
           {/* Nama Mata Kuliah */}

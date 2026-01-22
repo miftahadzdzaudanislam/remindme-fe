@@ -63,7 +63,7 @@ export default function Task() {
         >
           <motion.span
             variants={itemVariants}
-            className="absolute -top-4 left-8 text-sm font-medium text-white bg-danger px-4 py-2 rounded-full inline-block z-10"
+            className="absolute -top-4 left-25 text-sm font-medium text-white bg-danger px-4 py-2 rounded-full inline-block z-10 md:left-8"
           >
             Prioritas Tinggi
           </motion.span>

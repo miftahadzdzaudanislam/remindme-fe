@@ -120,7 +120,7 @@ export default function AdminCourse() {
         </div>
 
         {/* Table */}
-        <div className="max-w-110 overflow-x-auto md:min-w-full rounded-lg border border-gray-200">
+        <div className="max-w-100 overflow-x-auto md:min-w-full rounded-lg border border-gray-200">
           <DataTable
             columns={columns}
             data={coursesWithUser}

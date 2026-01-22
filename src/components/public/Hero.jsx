@@ -68,7 +68,7 @@ export default function Hero() {
                   </motion.span>
 
                   <motion.h1
-                    className="text-3xl md:text-4xl font-bold leading-tight"
+                    className="text-xl md:text-4xl font-bold leading-tight"
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.4 }}
@@ -77,7 +77,7 @@ export default function Hero() {
                   </motion.h1>
 
                   <motion.p
-                    className="mt-4 text-blue-100"
+                    className="mt-4 text-blue-100 text-md"
                     initial={{ y: 30, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.5 }}

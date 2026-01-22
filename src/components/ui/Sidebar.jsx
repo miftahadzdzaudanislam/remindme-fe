@@ -39,7 +39,7 @@ export default function Sidebar({ onToggle }) {
       {/* Mobile Toggle */}
       <button
         onClick={() => setMobileOpen(!mobileOpen)}
-        className={`fixed top-4 z-50 rounded-lg p-2 text-primary md:hidden
+        className={`fixed z-50 top-3.5 rounded-lg p-2 text-primary md:hidden
             ${mobileOpen ? "left-50" : "left-4"}    
         `}
       >

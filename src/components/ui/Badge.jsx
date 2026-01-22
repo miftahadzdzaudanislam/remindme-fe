@@ -6,7 +6,7 @@ export default function Badge({
   size = "md",
 }) {
   const variants = {
-    default: "whitespace-nowrap rounded-full border bg-gray-100/40 font-medium text-gray-800",
+    default: "whitespace-nowrap rounded-full border bg-gray-100/40 font-medium text-light",
     success: "whitespace-nowrap rounded-full border bg-success/40 font-medium text-green-800",
     warning: "whitespace-nowrap rounded-full border bg-warning/40 font-medium text-yellow-800",
     danger: "whitespace-nowrap rounded-full border bg-danger/40 font-medium text-red-800",

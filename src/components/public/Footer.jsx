@@ -1,3 +1,4 @@
+import Badge from "@/components/ui/Badge";
 import { Heart } from "lucide-react";
 
 export default function MainFooter() {
@@ -9,18 +10,16 @@ export default function MainFooter() {
       <div className="absolute left-50 -bottom-28 w-40 h-40 rounded-full border border-white/20" />
 
       {/* CONTENT */}
-      <div className="relative z-10 flex flex-wrap items-center justify-center gap-2 text-sm text-white/90">
-        <span>Made with</span>
+      <div className="relative z-10 flex flex-col items-center justify-center gap-2 text-sm text-white/90 md:flex-row">
+        <div>
+          <span>Made with</span>{" "}
+          <Heart size={16} className="text-red-500 fill-red-500 inline-block" />{" "}
+          <span>
+            by <span className="font-semibold">MiftahAdz</span>
+          </span>
+        </div>
 
-        <Heart size={16} className="text-red-500 fill-red-500 inline-block" />
-
-        <span>
-          by <span className="font-semibold">MiftahAdz</span>
-        </span>
-
-        <span className="inline-block text-xs bg-white/20 px-3 py-1 rounded-full font-semibold">
-          RemindMe v2.0
-        </span>
+        <Badge value={"RemindMe v2.0"} size="sm" className="md:basis-auto" />
       </div>
     </footer>
   );
