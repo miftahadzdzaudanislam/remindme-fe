@@ -13,7 +13,13 @@ import AdminUserCreate from "@/pages/admin/users/AdminUserCreate";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import Home from "@/pages/Home";
+import MahasiswaCourse from "@/pages/mahasiswa/courses/MahasiswaCourse";
+import MahasiswaCourseCreate from "@/pages/mahasiswa/courses/MahasiswaCourseCreate";
+import MahasiswaCourseEdit from "@/pages/mahasiswa/courses/MahasiswaCourseEdit";
 import MahasiswaDashboard from "@/pages/mahasiswa/MahasiswaDashboard";
+import MahasiswaTask from "@/pages/mahasiswa/tasks/MahasiswaTask";
+import MahasiswaTaskCreate from "@/pages/mahasiswa/tasks/MahasiswaTaskCreate";
+import MahasiswaTaskEdit from "@/pages/mahasiswa/tasks/MahasiswaTaskEdit";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
@@ -66,16 +72,16 @@ function App() {
           </Route>
 
           <Route path="courses">
-            <Route index element={"DaftarCourses"} />
-            <Route path="create" element={"CreateCourse"} />
-            <Route path="edit/:id" element={"EditCourse"} />
+            <Route index element={<MahasiswaCourse />} />
+            <Route path="create" element={<MahasiswaCourseCreate />} />
+            <Route path="edit/:id" element={<MahasiswaCourseEdit />} />
             <Route path="details/:id" element={"DetailCourse"} />
           </Route>
 
           <Route path="tasks">
-            <Route index element={"DaftarTasks"} />
-            <Route path="create" element={"CreateTask"} />
-            <Route path="edit/:id" element={"EditTask"} />
+            <Route index element={<MahasiswaTask />} />
+            <Route path="create" element={<MahasiswaTaskCreate />} />
+            <Route path="edit/:id" element={<MahasiswaTaskEdit />} />
             <Route path="details/:id" element={"DetailTask"} />
           </Route>
         </Route>

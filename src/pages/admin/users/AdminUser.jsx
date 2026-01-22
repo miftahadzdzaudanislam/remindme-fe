@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Users, Edit, Trash2, Loader2 } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
+import { useFilteredData } from "@/_hooks/utils/useFilteredData";
+import TabFilter from "@/components/ui/TabFilter";
 import DataTable from "react-data-table-component";
 import { CONFIG } from "@/utils/tableConfig";
 import { DUMMY_USERS } from "@/utils/dataDummy";
@@ -12,24 +14,18 @@ import ChangeStatusModal from "@/components/modal/ChangeStatusModal";
 export default function AdminUser() {
   useDocumentTitle("Kelola Mahasiswa");
 
-  const [activeTab, setActiveTab] = useState("semua");
   const [users, setUsers] = useState(DUMMY_USERS);
   const [selectedUser, setSelectedUser] = useState(null);
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const filteredUsers = useMemo(() => {
-    if (activeTab === "semua") return users;
-
-    const tab = CONFIG.tabs.find((t) => t.id === activeTab);
-
-    return users.filter((u) => u.status === tab?.status);
-  }, [users, activeTab]);
-
-  const openModal = (user, type) => {
-    setSelectedUser(user);
-    type === "status" ? setStatusModalOpen(true) : setDeleteModalOpen(true);
-  };
+  const { filteredData, activeTab, setActiveTab } = useFilteredData(
+    users,
+    (data, tab) => {
+      const tabConfig = CONFIG.tabs.find((t) => t.id === tab);
+      return data.filter((u) => u.status === tabConfig?.status);
+    }
+  );
 
   const closeModals = () => {
     setStatusModalOpen(false);
@@ -39,7 +35,7 @@ export default function AdminUser() {
 
   const handleChangeStatus = ({ status }) => {
     setUsers((prev) =>
-      prev.map((u) => (u.id === selectedUser.id ? { ...u, status } : u)),
+      prev.map((u) => (u.id === selectedUser.id ? { ...u, status } : u))
     );
     closeModals();
   };
@@ -110,14 +106,20 @@ export default function AdminUser() {
       cell: (row) => (
         <div className="flex justify-center gap-2 w-full">
           <button
-            onClick={() => openModal(row, "status")}
+            onClick={() => {
+              setSelectedUser(row);
+              setStatusModalOpen(true);
+            }}
             className="text-primary hover:text-primary-hover"
             title="Ubah Status"
           >
             <Edit size={18} />
           </button>
           <button
-            onClick={() => openModal(row, "delete")}
+            onClick={() => {
+              setSelectedUser(row);
+              setDeleteModalOpen(true);
+            }}
             className="text-danger hover:text-danger-hover cursor-pointer"
             title="Hapus User"
           >
@@ -147,29 +149,14 @@ export default function AdminUser() {
       </div>
 
       {/* Tabs */}
-      <div className="flex rounded-lg bg-gray-200 p-1 gap-1 overflow-x-auto">
-        {CONFIG.tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 rounded-lg px-2 md:px-4 py-2 transition font-medium text-xs md:text-sm whitespace-nowrap ${
-              activeTab === tab.id
-                ? "bg-primary shadow text-light"
-                : "text-gray-700 hover:text-gray-900 hover:bg-gray-300"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <TabFilter tabs={CONFIG.tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Table */}
       <div className="max-w-110 overflow-x-auto md:min-w-full rounded-lg border border-gray-200">
         <DataTable
           columns={columns}
-          data={filteredUsers}
+          data={filteredData}
           pagination
-          paginationServer
           paginationPerPage={10}
           paginationRowsPerPageOptions={[10, 25, 50]}
           noDataComponent={

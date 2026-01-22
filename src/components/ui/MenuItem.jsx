@@ -4,14 +4,16 @@ export default function MenuItem({
   id,
   label,
   isActive,
-  isMobile,
-  scrolled,
+  isMobile = false,
+  scrolled = false,
   onClick,
 }) {
-  const baseClass = "transition cursor-pointer";
+  const baseClass = `
+    inline-flex items-center justify-center transition-all duration-300 ease-in-out transform cursor-pointer font-medium
+  `;
 
   const mobileClass = isMobile
-    ? "block py-4 border-b border-gray-300"
+    ? "w-full py-4 border-b border-gray-300"
     : "px-5 py-2 rounded-3xl";
 
   const isSpecial = label === "Home" && !scrolled;
@@ -23,8 +25,12 @@ export default function MenuItem({
       : isMobile
         ? "text-primary hover:bg-gray-100"
         : scrolled
-          ? "text-primary"
-          : "text-light";
+          ? "text-primary hover:bg-primary/10"
+          : "text-light hover:bg-white/10";
+
+  const interactionClass = isMobile
+    ? ""
+    : "hover:scale-105 active:scale-95";
 
   return (
     <Link
@@ -33,7 +39,7 @@ export default function MenuItem({
         e.preventDefault();
         onClick?.(id);
       }}
-      className={`${baseClass} ${mobileClass} ${stateClass}`}
+      className={`${baseClass} ${mobileClass} ${stateClass} ${interactionClass}`}
     >
       {label}
     </Link>

@@ -4,7 +4,7 @@ import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import StatCard from "@/components/ui/StatCard";
 import Badge from "@/components/ui/Badge";
 import { DUMMY_USERS } from "@/utils/dataDummy";
-import { formatDate } from "@/utils/dataFormatter";
+import { formatDate } from "@/utils/dateFormatter";
 
 export default function AdminDashboard() {
   useDocumentTitle("Dashboard Admin");

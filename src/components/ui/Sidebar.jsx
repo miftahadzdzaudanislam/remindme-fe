@@ -23,6 +23,10 @@ export default function Sidebar({ onToggle }) {
     { label: "Mahasiswa", icon: Users, to: "/admin/users" },
     { label: "Jadwal", icon: BookOpen, to: "/admin/courses" },
     { label: "Tugas", icon: CheckSquare, to: "/admin/tasks" },
+    // Menu Mahasiswa
+    { label: "Dashboard", icon: Home, to: "/mahasiswa" },
+    { label: "Jadwal", icon: BookOpen, to: "/mahasiswa/courses" },
+    { label: "Tugas", icon: CheckSquare, to: "/mahasiswa/tasks" },
   ];
 
   const toggleSidebar = () => {

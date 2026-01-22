@@ -2,7 +2,7 @@ import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import DeleteModal from "@/components/modal/DeleteModal";
 import Badge from "@/components/ui/Badge";
 import { DUMMY_TASKS, DUMMY_USERS, DUMMY_COURSES } from "@/utils/dataDummy";
-import { formatDate } from "@/utils/dataFormatter";
+import { formatDate } from "@/utils/dateFormatter";
 import { CONFIG } from "@/utils/tableConfig";
 import { CheckSquare, Edit, Loader2, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";

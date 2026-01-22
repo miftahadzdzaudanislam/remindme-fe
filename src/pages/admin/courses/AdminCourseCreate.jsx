@@ -128,7 +128,7 @@ export default function AdminCourseCreate() {
             icon={House}
             color="dark"
             name="ruangan"
-            placeholder="Ruang A101"
+            placeholder="Contoh: Ruang A101"
             required
           />
 

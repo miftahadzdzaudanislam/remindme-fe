@@ -24,7 +24,7 @@ export default function MainHeader() {
   return (
     <>
       <motion.header
-        className="fixed top-0 w-full z-50 rounded-b-2xl overflow-hidden"
+        className="fixed top-0 w-full z-50 rounded-b-2xl"
         animate={{
           backgroundColor: scrolled
             ? "rgba(255,255,255,0.9)"
@@ -65,11 +65,11 @@ export default function MainHeader() {
               <li>
                 <Link
                   to="/login"
-                  className={`px-4 py-2 rounded-2xl transition ${
+                  className={`inline-flex items-center justify-center transform px-4 py-2 rounded-3xl font-semibold transition-all duration-300 ease-in-out ${
                     scrolled
-                      ? "text-white bg-primary hover:bg-primary-hover"
-                      : "text-primary bg-light hover:bg-white"
-                  }`}
+                      ? "bg-primary text-white shadow-md hover:shadow-lg hover:bg-primary-hover"
+                      : "bg-light text-primary shadow hover:bg-white hover:shadow-md"
+                  } active:scale-95 hover:scale-110`}
                 >
                   Login
                 </Link>
@@ -77,7 +77,11 @@ export default function MainHeader() {
               <li>
                 <Link
                   to="/register"
-                  className={`px-4 py-1 rounded-lg transition ${scrolled ? "text-primary" : "text-white"}`}
+                  className={`inline-flex items-center justify-center transform px-4 py-2 rounded-3xl font-semibold transition-all duration-300 ease-in-out ${
+                    scrolled
+                      ? "text-primary hover:bg-primary/10"
+                      : "text-white hover:bg-white/10"
+                  } hover:scale-105 active:scale-95`}
                 >
                   Register
                 </Link>

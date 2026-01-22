@@ -88,10 +88,10 @@ export const DUMMY_TASKS = [
   {
     id: 2,
     user_id: 2,
-    course_id: 2,
+    course_id: 3,
     nama_tugas: "Tugas 2",
     deskripsi: "lorem ipsum dolor",
-    deadline: "2026-01-28",
+    deadline: "2026-01-29",
     prioritas: "low",
     is_done: false,
   },

@@ -35,7 +35,7 @@ export default function DashboardLayout() {
           </header>
 
           {/* Page Content */}
-          <main className="flex-1 bg-gradient-to-br from-indigo-50 via-white to-emerald-50">
+          <main className="flex-1 bg-linear-to-br from-indigo-50 via-white to-emerald-50">
             <Outlet />
           </main>
 
