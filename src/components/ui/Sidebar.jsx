@@ -11,8 +11,10 @@ import {
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLogout } from "@/_hooks/useAuth";
 
 export default function Sidebar({ onToggle }) {
+  const logoutMutation = useLogout();
   const [open, setOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -32,6 +34,10 @@ export default function Sidebar({ onToggle }) {
   const toggleSidebar = () => {
     setOpen(!open);
     onToggle?.(!open);
+  };
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
   };
 
   return (
@@ -148,8 +154,13 @@ export default function Sidebar({ onToggle }) {
                 >
                   <User size={16} /> Profile
                 </Link>
-                <button className="flex w-full items-center gap-2 px-4 py-3 rounded-b-xl text-red-600 hover:bg-red-50">
-                  <LogOut size={16} /> Logout
+                <button
+                  onClick={handleLogout}
+                  disabled={logoutMutation.isPending}
+                  className="flex w-full items-center gap-2 px-4 py-3 rounded-b-xl text-red-600 hover:bg-red-50"
+                >
+                  <LogOut size={16} />
+                  {logoutMutation.isPending ? "Logging out..." : "Logout"}
                 </button>
               </motion.div>
             )}
