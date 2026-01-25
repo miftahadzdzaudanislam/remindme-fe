@@ -1,36 +1,39 @@
+import { useAdminCourse } from "@/_hooks/useCourses";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
+import { useFilteredCourses } from "@/_hooks/utils/useFilteredData";
 import DeleteModal from "@/components/modal/DeleteModal";
-import { DUMMY_COURSES, DUMMY_USERS } from "@/utils/dataDummy";
 import { CONFIG } from "@/utils/tableConfig";
 import { BookOpen, Edit, Loader2, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
 
 export default function AdminCourse() {
   useDocumentTitle("Kelola Mata Kuliah");
 
-  const [courses, setCourses] = useState(DUMMY_COURSES);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
-  // Gabungkan data courses dengan user
-  const coursesWithUser = useMemo(() => {
-    return courses.map((course) => ({
-      ...course,
-      user: DUMMY_USERS.find((user) => user.id === course.user_id),
-    }));
-  }, [courses]);
+  // Ambil data dari API
+  const {
+    courses: apiCourses,
+    pagination,
+    isLoading,
+    isError,
+  } = useAdminCourse({ page, limit });
+
+  // Hook untuk filter
+  const { filteredCourses, search, setSearch } = useFilteredCourses(apiCourses);
 
   const openDeleteModal = (course) => {
     setSelectedCourse(course);
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteCourse = () => {
-    setCourses((prev) => prev.filter((c) => c.id !== selectedCourse.id));
-    setDeleteModalOpen(false);
-    setSelectedCourse(null);
+  const handleDeleteCourse = async () => {
+    // await deleteUserMutation.mutateAsync(selectedUser.id);
   };
 
   const columns = [
@@ -42,7 +45,7 @@ export default function AdminCourse() {
     },
     {
       name: "Mahasiswa",
-      selector: (row) => row.user?.nama || "-",
+      selector: (row) => row.user?.name || "-",
       sortable: true,
       wrap: true,
     },
@@ -119,17 +122,38 @@ export default function AdminCourse() {
           </Link>
         </div>
 
+        {/* Search Input */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Cari nama matkul, dosen, atau ruangan..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
         {/* Table */}
         <div className="max-w-100 overflow-x-auto md:min-w-full rounded-lg border border-gray-200">
           <DataTable
             columns={columns}
-            data={coursesWithUser}
+            data={filteredCourses}
             pagination
-            paginationPerPage={10}
+            paginationPerPage={limit}
             paginationRowsPerPageOptions={[10, 25, 50]}
+            paginationTotalRows={pagination?.total || filteredCourses.length}
+            onChangePage={(p) => setPage(p)}
+            onChangeRowsPerPage={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+            progressPending={isLoading}
             noDataComponent={
               <div className="py-8 text-gray-500">
-                Tidak ada data mata kuliah
+                {isError ? "Gagal memuat data" : "Tidak ada data mata kuliah"}
               </div>
             }
             progressComponent={

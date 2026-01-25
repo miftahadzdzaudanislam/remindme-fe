@@ -7,15 +7,9 @@ import API from "@/_api";
 export const adminGetUser = async ({
   page = 1,
   limit = 10,
-  search = "",
-  status = "",
-  jurusan = "",
-} = {}) => {
+  // search = "",
+}) => {
   const params = { page, limit };
-
-  // filter: jurusan, status
-  if (status) params.status = status;
-  if (jurusan) params.jurusan = jurusan;
 
   const response = await API.get("/admin/users", { params });
   return response.data;

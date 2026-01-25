@@ -1,4 +1,7 @@
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import RoleRoute from "@/components/auth/RoleRoute";
 import NotFound from "@/components/NotFoundPage";
+import Unauthorized from "@/components/UnauthorizedPage";
 import DashboardLayout from "@/layout/DashboardLayout";
 import PublicLayout from "@/layout/PublicLayout";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
@@ -31,65 +34,78 @@ function App() {
           <Route index element={<Home />} />
         </Route>
 
-        {/* ADMIN ROUTES */}
-        <Route path="admin" element={<DashboardLayout />}>
-          <Route index element={<AdminDashboard />} />
+        {/* PROTECTED ROUTES */}
+        {/* <Route element={<ProtectedRoute />}>
 
-          <Route path="profile">
-            <Route index element={"AdminProfile"} />
-            <Route path="edit" element={"AdminEditProfile"} />
-          </Route>
+          <Route element={<RoleRoute allowedRoles={["admin"]} />}> */}
+            {/* ADMIN ROUTES */}
+            <Route path="admin" element={<DashboardLayout />}>
+              <Route index element={<AdminDashboard />} />
 
-          <Route path="users">
-            <Route index element={<AdminUser />} />
-            <Route path="create" element={<AdminUserCreate />} />
-            <Route path="details/:id" element={"DetailUser"} />
-            <Route path="details/:id/login-history" element={"UserHistory"} />
-          </Route>
+              <Route path="profile">
+                <Route index element={"AdminProfile"} />
+                <Route path="edit" element={"AdminEditProfile"} />
+              </Route>
 
-          <Route path="courses">
-            <Route index element={<AdminCourse />} />
-            <Route path="create" element={<AdminCourseCreate />} />
-            <Route path="edit/:id" element={<AdminCourseEdit />} />
-            <Route path="details/:id" element={"DetailCourse"} />
-          </Route>
+              <Route path="users">
+                <Route index element={<AdminUser />} />
+                <Route path="create" element={<AdminUserCreate />} />
+                <Route path="details/:id" element={"DetailUser"} />
+                <Route
+                  path="details/:id/login-history"
+                  element={"UserHistory"}
+                />
+              </Route>
 
-          <Route path="tasks">
-            <Route index element={<AdminTask />} />
-            <Route path="create" element={<AdminTaskCreate />} />
-            <Route path="edit/:id" element={<AdminTaskEdit />} />
-            <Route path="details/:id" element={"DetailTask"} />
-          </Route>
-        </Route>
+              <Route path="courses">
+                <Route index element={<AdminCourse />} />
+                <Route path="create" element={<AdminCourseCreate />} />
+                <Route path="edit/:id" element={<AdminCourseEdit />} />
+                <Route path="details/:id" element={"DetailCourse"} />
+              </Route>
 
-        {/* MAHASISwA ROUTES */}
-        <Route path="mahasiswa" element={<DashboardLayout />}>
-          <Route index element={<MahasiswaDashboard />} />
+              <Route path="tasks">
+                <Route index element={<AdminTask />} />
+                <Route path="create" element={<AdminTaskCreate />} />
+                <Route path="edit/:id" element={<AdminTaskEdit />} />
+                <Route path="details/:id" element={"DetailTask"} />
+              </Route>
+            </Route>
+          {/* </Route> */}
 
-          <Route path="profile">
-            <Route index element={"MahasiswaProfile"} />
-            <Route path="edit" element={"MahasiswaEditProfile"} />
-          </Route>
+          {/* <Route element={<RoleRoute allowedRoles={["mahasiswa"]} />}> */}
+            {/* MAHASISwA ROUTES */}
+            <Route path="mahasiswa" element={<DashboardLayout />}>
+              <Route index element={<MahasiswaDashboard />} />
 
-          <Route path="courses">
-            <Route index element={<MahasiswaCourse />} />
-            <Route path="create" element={<MahasiswaCourseCreate />} />
-            <Route path="edit/:id" element={<MahasiswaCourseEdit />} />
-            <Route path="details/:id" element={"DetailCourse"} />
-          </Route>
+              <Route path="profile">
+                <Route index element={"MahasiswaProfile"} />
+                <Route path="edit" element={"MahasiswaEditProfile"} />
+              </Route>
 
-          <Route path="tasks">
-            <Route index element={<MahasiswaTask />} />
-            <Route path="create" element={<MahasiswaTaskCreate />} />
-            <Route path="edit/:id" element={<MahasiswaTaskEdit />} />
-            <Route path="details/:id" element={"DetailTask"} />
-          </Route>
-        </Route>
+              <Route path="courses">
+                <Route index element={<MahasiswaCourse />} />
+                <Route path="create" element={<MahasiswaCourseCreate />} />
+                <Route path="edit/:id" element={<MahasiswaCourseEdit />} />
+                <Route path="details/:id" element={"DetailCourse"} />
+              </Route>
+
+              <Route path="tasks">
+                <Route index element={<MahasiswaTask />} />
+                <Route path="create" element={<MahasiswaTaskCreate />} />
+                <Route path="edit/:id" element={<MahasiswaTaskEdit />} />
+                <Route path="details/:id" element={"DetailTask"} />
+              </Route>
+            </Route>
+          {/* </Route>
+          
+        </Route> */}
 
         {/* AUTH ROUTES */}
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
 
+        <Route path="unauthorized" element={<Unauthorized />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

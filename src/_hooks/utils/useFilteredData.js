@@ -49,3 +49,28 @@ export function useFilteredUsers(apiUsers) {
     setSearch,
   };
 }
+
+/**
+ * Hook untuk filter courses berdasarkan search (nama matkul, dosen, ruangan)
+ */
+export function useFilteredCourses(apiCourses) {
+  const [search, setSearch] = useState("");
+
+  const filteredCourses = useMemo(() => {
+    return apiCourses.filter((c) => {
+      const searchLower = search.toLowerCase();
+      return (
+        !search ||
+        c.nama_matkul?.toLowerCase().includes(searchLower) ||
+        c.nama_dosen?.toLowerCase().includes(searchLower) ||
+        c.ruangan?.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [apiCourses, search]);
+
+  return {
+    filteredCourses,
+    search,
+    setSearch,
+  };
+}

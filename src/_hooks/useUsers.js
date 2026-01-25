@@ -8,20 +8,17 @@ import { useUserRole } from "@/_hooks/useAuth";
 export const useAdminUser = ({
   page = 1,
   limit = 10,
-  search = "",
-  status = "",
-  jurusan = "",
-} = {}) => {
+  // search = "",
+}) => {
   const currentRole = useUserRole();
   const enabled = currentRole === "admin";
 
   const query = useQuery({
-    queryKey: ["admin-users", { page, limit, jurusan }],
+    queryKey: ["admin-users", { page, limit }],
     queryFn: async () => {
       const res = await userService.adminGetUser({
         page,
         limit,
-        jurusan,
       });
       return res;
     },
@@ -51,7 +48,7 @@ export const useAdminUser = ({
  * Delete user
  */
 export const useAdminDeleteUser = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (userId) => {
@@ -66,7 +63,7 @@ export const useAdminDeleteUser = () => {
       console.error("❌ Error deleting status:", error.message);
     },
   });
-}
+};
 
 /**
  * Ubah status user

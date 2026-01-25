@@ -26,7 +26,7 @@ export default function AdminUser() {
     pagination,
     isLoading,
     isError,
-  } = useAdminUser({ page, limit, jurusan: "" });
+  } = useAdminUser({ page, limit });
 
   // gunakan hook untuk filter
   const { filteredUsers, activeTab, setActiveTab, search, setSearch } =
