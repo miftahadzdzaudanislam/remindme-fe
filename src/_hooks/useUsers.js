@@ -1,111 +1,90 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import * as userService from "@/_services/userService";
+import { useUserRole } from "@/_hooks/useAuth";
 
-// Dummy data
-const DUMMY_USERS = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    status: "semua",
-    role: "user",
-    createdAt: "2025-01-15",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    status: "aktif",
-    role: "user",
-    createdAt: "2025-01-10",
-  },
-  {
-    id: 3,
-    name: "Bob Johnson",
-    email: "bob@example.com",
-    status: "tidak_aktif",
-    role: "moderator",
-    createdAt: "2025-01-05",
-  },
-  {
-    id: 4,
-    name: "Alice Brown",
-    email: "alice@example.com",
-    status: "suspended",
-    role: "user",
-    createdAt: "2024-12-20",
-  },
-];
-
-// Service API (sesuaikan dengan struktur project Anda)
-const userService = {
-  adminGetUsers: async (params) => {
-    // Simulasi delay API
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Dummy response
-    return {
-      data: DUMMY_USERS,
-      pagination: {
-        page: params.page || 1,
-        limit: params.limit || 10,
-        total: DUMMY_USERS.length,
-        totalPages: 1,
-      },
-    };
-  },
-  adminDeleteUser: async (id) => {
-    // Simulasi delay API
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return { success: true, id };
-  },
-};
-
-export const useAdminUsers = (page = 1, limit = 10, search = "") => {
-  const [activeTab, setActiveTab] = useState("semua");
+/**
+ * Ambil daftar user admin dengan pagination & search
+ */
+export const useAdminUser = ({
+  page = 1,
+  limit = 10,
+  search = "",
+  status = "",
+  jurusan = "",
+} = {}) => {
+  const currentRole = useUserRole();
+  const enabled = currentRole === "admin";
 
   const query = useQuery({
-    queryKey: ["adminUsers", page, limit, search, activeTab],
+    queryKey: ["admin-users", { page, limit, jurusan }],
     queryFn: async () => {
-      const response = await userService.adminGetUsers({
+      const res = await userService.adminGetUser({
         page,
         limit,
-        search,
-        status: activeTab,
+        jurusan,
       });
-      return response;
+      return res;
     },
+    enabled,
     keepPreviousData: true,
     staleTime: 30000,
     retry: 1,
+    select: (res) => ({
+      users: res?.data ?? [],
+      pagination: res?.pagination || {},
+      success: res?.success,
+      message: res?.message,
+    }),
   });
 
-  const filteredUsers = useMemo(() => {
-    return query.data?.data || [];
-  }, [query.data]);
-
   return {
-    users: filteredUsers,
-    pagination: query.data?.pagination || {},
-    activeTab,
-    setActiveTab,
+    ...query,
+    users: query.data?.users ?? [],
+    pagination: query.data?.pagination ?? {},
     isLoading: query.isLoading,
-    isFetching: query.isFetching,
     error: query.error,
+    isFetching: query.isFetching,
   };
 };
 
-export const useAdminDeleteUserMutation = () => {
+/**
+ * Delete user
+ */
+export const useAdminDeleteUser = () => {
+    const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId) => {
+      const res = await userService.adminDeleteUser(userId);
+      return res;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      console.log("✅ Status berhasil dihapus:", data.message);
+    },
+    onError: (error) => {
+      console.error("❌ Error deleting status:", error.message);
+    },
+  });
+}
+
+/**
+ * Ubah status user
+ */
+export const useAdminChangeStatusUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: userService.adminDeleteUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adminUsers"] });
-      console.log("✅ User berhasil dihapus");
+    mutationFn: async ({ userId, status }) => {
+      const res = await userService.adminChangeUserStatus(userId, { status });
+      return res;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      console.log("✅ Status berhasil diubah:", data.message);
     },
     onError: (error) => {
-      console.error("❌ Delete user error:", error);
+      console.error("❌ Error changing status:", error.message);
     },
   });
 };

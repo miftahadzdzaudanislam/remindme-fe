@@ -3,60 +3,52 @@ import { Link } from "react-router-dom";
 import { Users, Edit, Trash2, Loader2 } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import { useFilteredData } from "@/_hooks/utils/useFilteredData";
+import { useAdminChangeStatusUser, useAdminDeleteUser, useAdminUser } from "@/_hooks/useUsers";
 import TabFilter from "@/components/ui/TabFilter";
 import DataTable from "react-data-table-component";
 import { CONFIG } from "@/utils/tableConfig";
-import { DUMMY_USERS } from "@/utils/dataDummy";
 import DeleteUserModal from "@/components/modal/DeleteUserModal";
 import ChangeStatusModal from "@/components/modal/ChangeStatusModal";
+import { useFilteredUsers } from "@/_hooks/utils/useFilteredData";
 
 export default function AdminUser() {
   useDocumentTitle("Kelola Mahasiswa");
 
-  const [users, setUsers] = useState(DUMMY_USERS);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [selectedUser, setSelectedUser] = useState(null);
   const [statusModalOpen, setStatusModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const { filteredData, activeTab, setActiveTab } = useFilteredData(
-    users,
-    (data, tab) => {
-      const tabConfig = CONFIG.tabs.find((t) => t.id === tab);
-      return data.filter((u) => u.status === tabConfig?.status);
-    }
-  );
+  // ambil data dari API
+  const {
+    users: apiUsers,
+    pagination,
+    isLoading,
+    isError,
+  } = useAdminUser({ page, limit, jurusan: "" });
 
-  const closeModals = () => {
-    setStatusModalOpen(false);
-    setDeleteModalOpen(false);
-    setSelectedUser(null);
-  };
+  // gunakan hook untuk filter
+  const { filteredUsers, activeTab, setActiveTab, search, setSearch } =
+    useFilteredUsers(apiUsers);
 
-  const handleChangeStatus = ({ status }) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === selectedUser.id ? { ...u, status } : u))
-    );
-    closeModals();
-  };
-
-  const handleDeleteUser = () => {
-    setUsers((prev) => prev.filter((u) => u.id !== selectedUser.id));
-    closeModals();
-  };
+  // mutation untuk change status
+  const changeStatusMutation = useAdminChangeStatusUser();
+  
+  // mutation untuk delete user
+  const deleteUserMutation = useAdminDeleteUser();
 
   const columns = [
     {
       name: "No.",
-      cell: (_, index) => index + 1,
+      cell: (_, index) => (page - 1) * limit + index + 1,
       sortable: false,
       width: "60px",
     },
     {
       name: "Nama",
-      selector: (row) => row.nama || "-",
+      selector: (row) => row.name || "-",
       sortable: true,
-      wrap: true,
       width: "110px",
     },
     {
@@ -69,13 +61,13 @@ export default function AdminUser() {
       name: "NIM",
       selector: (row) => row.nim,
       sortable: true,
-      width: "120px",
+      width: "110px",
     },
     {
       name: "Jurusan",
       selector: (row) => CONFIG.jurusanMap[row.jurusan] || row.jurusan,
       sortable: true,
-      wrap: true,
+      width: "160px",
     },
     {
       name: "Role",
@@ -132,6 +124,25 @@ export default function AdminUser() {
     },
   ];
 
+  const closeModals = () => {
+    setStatusModalOpen(false);
+    setDeleteModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleChangeStatus = async ({ status }) => {
+    await changeStatusMutation.mutateAsync({
+      userId: selectedUser.id,
+      status,
+    });
+    closeModals();
+  };
+
+  const handleDeleteUser = async () => {
+    await deleteUserMutation.mutateAsync(selectedUser.id);
+    closeModals();
+  };
+
   return (
     <div className="min-h-screen space-y-4 rounded-xl p-3 md:p-6">
       {/* Header */}
@@ -148,23 +159,54 @@ export default function AdminUser() {
         </Link>
       </div>
 
+      {/* Search Input */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Cari nama, email, atau NIM..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
       {/* Tabs */}
-      <TabFilter tabs={CONFIG.tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      <TabFilter
+        tabs={CONFIG.tabs}
+        activeTab={activeTab}
+        onTabChange={(tabId) => {
+          setActiveTab(tabId);
+          setPage(1);
+        }}
+      />
 
       {/* Table */}
       <div className="w-100 md:min-w-full rounded-lg border border-gray-200">
         <DataTable
           columns={columns}
-          data={filteredData}
+          data={filteredUsers}
           pagination
-          paginationPerPage={10}
+          paginationPerPage={limit}
           paginationRowsPerPageOptions={[10, 25, 50]}
+          paginationTotalRows={pagination?.total || filteredUsers.length}
+          onChangePage={(p) => setPage(p)}
+          onChangeRowsPerPage={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+          progressPending={isLoading}
           noDataComponent={
-            <div className="py-8 text-gray-500">Tidak ada data mahasiswa</div>
+            <div className="py-8 text-gray-500">
+              {isError ? "Gagal memuat data" : "Tidak ada data mahasiswa"}
+            </div>
           }
           progressComponent={
             <div className="flex justify-center py-10">
               <Loader2 className="animate-spin h-6 w-6 text-primary" />
+              <p className="ps-1">Loading...</p>
             </div>
           }
           striped
@@ -183,6 +225,7 @@ export default function AdminUser() {
 
       <DeleteUserModal
         open={deleteModalOpen}
+        userName={selectedUser?.name}
         onClose={closeModals}
         onConfirm={handleDeleteUser}
       />

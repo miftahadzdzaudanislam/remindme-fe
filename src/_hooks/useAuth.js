@@ -2,7 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import * as authService from "@/_services/authService";
 
-// Login Mutation
+/**
+ * Login Mutation
+ */
 export const useLogin = () => {
   const navigate = useNavigate();
 
@@ -38,7 +40,9 @@ export const useLogin = () => {
   });
 };
 
-// Register
+/**
+ * Register Mutation
+ */
 export const useRegister = () => {
   const navigate = useNavigate();
 
@@ -65,7 +69,9 @@ export const useRegister = () => {
   });
 };
 
-// Logout
+/**
+ * Logout Mutation
+ */
 export const useLogout = () => {
   const navigate = useNavigate();
 
@@ -109,4 +115,7 @@ export const getUserData = () => {
 };
 
 // Get user role
-export const useUserRole = () => {};
+export const useUserRole = () => {
+  const userData = getUserData();
+  return userData?.role || null;
+};

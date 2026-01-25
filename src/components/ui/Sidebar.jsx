@@ -26,9 +26,9 @@ export default function Sidebar({ onToggle }) {
     { label: "Jadwal", icon: BookOpen, to: "/admin/courses" },
     { label: "Tugas", icon: CheckSquare, to: "/admin/tasks" },
     // Menu Mahasiswa
-    { label: "Dashboard", icon: Home, to: "/mahasiswa" },
-    { label: "Jadwal", icon: BookOpen, to: "/mahasiswa/courses" },
-    { label: "Tugas", icon: CheckSquare, to: "/mahasiswa/tasks" },
+    // { label: "Dashboard", icon: Home, to: "/mahasiswa" },
+    // { label: "Jadwal", icon: BookOpen, to: "/mahasiswa/courses" },
+    // { label: "Tugas", icon: CheckSquare, to: "/mahasiswa/tasks" },
   ];
 
   const toggleSidebar = () => {

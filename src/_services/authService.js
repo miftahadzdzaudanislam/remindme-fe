@@ -49,4 +49,20 @@ export const logout = async ({ token }) => {
 };
 
 // Refresh Token
-export const refreshToken = async () => {};
+export const refreshToken = async ({ token }) => {
+  const safeToken = token || localStorage.getItem("authToken");
+  if (!safeToken) throw new Error("Missing token");
+  try {
+    const response = await API.post("/refresh-token", { token: safeToken });
+    if (response?.data?.success) {
+      return response.data;
+    } else {
+      throw new Error(response.data.message || "Token Refresh Failed");
+    }
+  } catch (error) {
+    if (error.response?.data) {
+      throw error.response.data;
+    }
+    throw error;
+  }
+};

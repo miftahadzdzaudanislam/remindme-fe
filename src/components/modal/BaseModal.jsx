@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 export default function BaseModal({
   open,
@@ -14,6 +15,7 @@ export default function BaseModal({
   confirmButtonColor = "bg-primary hover:bg-primary-hover",
   customError,
   onCloseCallback,
+  isLoading = false,
 }) {
   const [inputText, setInputText] = useState("");
   const [error, setError] = useState("");
@@ -34,6 +36,7 @@ export default function BaseModal({
   };
 
   const handleClose = () => {
+    if (isLoading) return;
     onCloseCallback?.();
     onClose();
   };
@@ -83,7 +86,8 @@ export default function BaseModal({
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
                       placeholder={confirmText}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary"
+                      disabled={isLoading}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
                     />
                   </>
                 )}
@@ -97,14 +101,17 @@ export default function BaseModal({
               <div className="flex justify-end gap-3 px-6 py-4">
                 <button
                   onClick={handleClose}
-                  className="rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                  disabled={isLoading}
+                  className="rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Batal
                 </button>
                 <button
                   onClick={handleConfirm}
-                  className={`rounded-md px-4 py-2 text-sm text-white ${confirmButtonColor}`}
+                  disabled={isLoading}
+                  className={`rounded-md px-4 py-2 text-sm text-white flex items-center justify-center gap-2 ${confirmButtonColor} disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
+                  {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                   {confirmButtonText}
                 </button>
               </div>
