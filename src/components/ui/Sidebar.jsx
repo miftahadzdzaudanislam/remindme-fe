@@ -23,7 +23,7 @@ export default function Sidebar({ onToggle }) {
   const menus = [
     { label: "Dashboard", icon: Home, to: "/admin" },
     { label: "Mahasiswa", icon: Users, to: "/admin/users" },
-    { label: "Jadwal", icon: BookOpen, to: "/admin/courses" },
+    { label: "Mata kuliah", icon: BookOpen, to: "/admin/courses" },
     { label: "Tugas", icon: CheckSquare, to: "/admin/tasks" },
     // Menu Mahasiswa
     // { label: "Dashboard", icon: Home, to: "/mahasiswa" },

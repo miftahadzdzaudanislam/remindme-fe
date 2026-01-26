@@ -1,7 +1,8 @@
-import { useAdminCourse } from "@/_hooks/useCourses";
+import { useAdminCourse, useAdminDeleteCourse } from "@/_hooks/useCourses";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import { useFilteredCourses } from "@/_hooks/utils/useFilteredData";
 import DeleteModal from "@/components/modal/DeleteModal";
+import { formatJam } from "@/utils/dateFormatter";
 import { CONFIG } from "@/utils/tableConfig";
 import { BookOpen, Edit, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
@@ -27,13 +28,18 @@ export default function AdminCourse() {
   // Hook untuk filter
   const { filteredCourses, search, setSearch } = useFilteredCourses(apiCourses);
 
+  // mutation untuk delete course
+  const deleteCourseMutation = useAdminDeleteCourse();
+
   const openDeleteModal = (course) => {
     setSelectedCourse(course);
     setDeleteModalOpen(true);
   };
 
   const handleDeleteCourse = async () => {
-    // await deleteUserMutation.mutateAsync(selectedUser.id);
+    await deleteCourseMutation.mutateAsync(selectedCourse.id);
+    setDeleteModalOpen(false);
+    setSelectedCourse(null);
   };
 
   const columns = [
@@ -70,7 +76,7 @@ export default function AdminCourse() {
     },
     {
       name: "Waktu",
-      selector: (row) => `${row.jam_mulai} - ${row.jam_selesai} WIB`,
+      selector: (row) => `${formatJam(row.jam_mulai)} - ${formatJam(row.jam_selesai)} WIB`,
       sortable: true,
       wrap: true,
     },

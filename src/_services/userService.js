@@ -16,7 +16,20 @@ export const adminGetUser = async ({
 };
 
 /**
- * Delete User
+ * Create User Mahasiswa
+ */
+export const adminCreateUser = async (userData) => {
+  try {
+    const response = await API.post("/admin/users", userData);
+    return response.data;
+  } catch (error) {
+    console.log("Error create user:", error);
+    throw error;
+  }
+};
+
+/**
+ * Delete User berdasarkan ID
  */
 export const adminDeleteUser = async (userId) => {
   try {

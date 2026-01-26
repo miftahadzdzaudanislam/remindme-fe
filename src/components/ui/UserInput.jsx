@@ -46,6 +46,7 @@ const UserInput = forwardRef(
         {label && (
           <label className={`mb-2 block text-sm font-medium ${labelColor}`}>
             {label}
+            {props.required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
 
@@ -109,7 +110,7 @@ const UserInput = forwardRef(
         </div>
 
         {/* Error Message */}
-        {error && <p className="mt-1 text-sm text-red-300">{error}</p>}
+        {error && <p className="mt-1 text-sm text-danger">{error}</p>}
       </div>
     );
   },

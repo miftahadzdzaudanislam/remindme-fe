@@ -57,7 +57,7 @@ export const useRegister = () => {
         localStorage.setItem("userData", JSON.stringify(data.user));
       }
 
-      navigate("/login");
+      navigate("/mahasiswa");
     },
     onError: (error) => {
       // Error akan ditampilkan di component via mutation state

@@ -38,6 +38,25 @@ export default function AdminUser() {
   // mutation untuk delete user
   const deleteUserMutation = useAdminDeleteUser();
 
+  const closeModals = () => {
+    setStatusModalOpen(false);
+    setDeleteModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const handleChangeStatus = async ({ status }) => {
+    await changeStatusMutation.mutateAsync({
+      userId: selectedUser.id,
+      status,
+    });
+    closeModals();
+  };
+
+  const handleDeleteUser = async () => {
+    await deleteUserMutation.mutateAsync(selectedUser.id);
+    closeModals();
+  };
+
   const columns = [
     {
       name: "No.",
@@ -124,25 +143,6 @@ export default function AdminUser() {
     },
   ];
 
-  const closeModals = () => {
-    setStatusModalOpen(false);
-    setDeleteModalOpen(false);
-    setSelectedUser(null);
-  };
-
-  const handleChangeStatus = async ({ status }) => {
-    await changeStatusMutation.mutateAsync({
-      userId: selectedUser.id,
-      status,
-    });
-    closeModals();
-  };
-
-  const handleDeleteUser = async () => {
-    await deleteUserMutation.mutateAsync(selectedUser.id);
-    closeModals();
-  };
-
   return (
     <div className="min-h-screen space-y-4 rounded-xl p-3 md:p-6">
       {/* Header */}
@@ -155,7 +155,7 @@ export default function AdminUser() {
           to="create"
           className="inline-flex items-center justify-center px-3 py-2 rounded-lg transition font-medium text-xs text-white bg-primary drop-shadow-xl md:drop-shadow-2xl shadow-primary hover:scale-105 hover:bg-primary-hover md:text-sm w-full md:w-auto md:px-4"
         >
-          Tambah User +
+          Tambah Mahasiswa +
         </Link>
       </div>
 

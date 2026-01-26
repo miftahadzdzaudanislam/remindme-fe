@@ -189,7 +189,7 @@ export default function Register() {
                   required: "Nomor telepon wajib diisi",
                   pattern: {
                     value: /^62[0-9]{9,12}$/,
-                    message: "Telepon di awali dengan 62",
+                    message: "Telepon di awali dengan 62 dan 11-14 digit",
                   },
                 })}
                 error={isSubmitted && errors.telepon?.message}

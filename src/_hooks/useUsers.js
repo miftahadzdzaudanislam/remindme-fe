@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as userService from "@/_services/userService";
 import { useUserRole } from "@/_hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Ambil daftar user admin dengan pagination & search
@@ -45,7 +46,30 @@ export const useAdminUser = ({
 };
 
 /**
- * Delete user
+ * Create User mahasiswa Mutation
+ */
+export const useAdminCreateUser = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userData) => {
+      const res = await userService.adminCreateUser(userData);
+      return res;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      navigate("/admin/users");
+      console.log("✅ User berhasil dibuat:", data.message);
+    },
+    onError: (error) => {
+      console.error("❌ Error create user:", error.message || error);
+    },
+  });
+};
+
+/**
+ * Delete user Mutation
  */
 export const useAdminDeleteUser = () => {
   const queryClient = useQueryClient();
@@ -57,16 +81,16 @@ export const useAdminDeleteUser = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      console.log("✅ Status berhasil dihapus:", data.message);
+      console.log("✅ User berhasil dihapus:", data.message);
     },
     onError: (error) => {
-      console.error("❌ Error deleting status:", error.message);
+      console.error("❌ Error deleting user:", error.message);
     },
   });
 };
 
 /**
- * Ubah status user
+ * Ubah status user Mutation
  */
 export const useAdminChangeStatusUser = () => {
   const queryClient = useQueryClient();

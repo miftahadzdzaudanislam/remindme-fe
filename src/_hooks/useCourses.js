@@ -1,6 +1,7 @@
 import { useUserRole } from "@/_hooks/useAuth";
 import * as courseService from "@/_services/courseService";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Ambil daftar course admin dengan pagination & search
@@ -42,4 +43,95 @@ export const useAdminCourse = ({
     error: query.error,
     isFetching: query.isFetching,
   };
+};
+
+/**
+ * Create Course Mutation
+ */
+export const useAdminCreateCourse = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (courseData) => {
+      const res = await courseService.adminCreateCourse(courseData);
+      return res;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-courses"] });
+      navigate("/admin/courses");
+      console.log("✅ Jadwal berhasil dibuat:", data.message);
+    },
+    onError: (error) => {
+      console.error("❌ Error create course:", error.message || error);
+    },
+  });
+};
+
+/**
+ * Detail Course berdasarkan ID
+ */
+export const useAdminCourseDetail = (id) => {
+  const query = useQuery({
+    queryKey: ["admin-course-detail", id],
+    queryFn: async () => {
+      const res = await courseService.adminGetCourseDetail(id);
+      return res.data;
+    },
+    enabled: !!id,
+    staleTime: 10 * 60 * 1000,
+    retry: 2,
+  });
+
+  return {
+    ...query,
+    course: query.data ?? null,
+    isLoading: query.isLoading,
+    error: query.error,
+    isFetching: query.isFetching,
+  };
+};
+
+/**
+ * Update Course Mutation
+ */
+export const useAdminUpdateCourse = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, courseData }) => {
+      const res = await courseService.adminUpdateCourse(id, courseData);
+      return res;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-courses"] });
+      navigate("/admin/courses");
+      console.log("✅ Jadwal berhasil diubah:", data.message);
+    },
+    onError: (error) => {
+      console.error("❌ Error updating course:", error.message || error);
+    },
+  });
+};
+
+/**
+ * Delete course Mutation
+ */
+export const useAdminDeleteCourse = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id) => {
+      const res = await courseService.adminDeleteCourse(id);
+      return res;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-courses"] });
+      console.log("✅ Course berhasil dihapus:", data.message);
+    },
+    onError: (error) => {
+      console.error("❌ Error deleting course:", error.message);
+    },
+  });
 };

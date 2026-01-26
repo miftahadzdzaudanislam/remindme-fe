@@ -1,5 +1,5 @@
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -9,34 +9,56 @@ import {
   User,
   House,
   Briefcase,
+  CalendarDays,
+  BookOpenText,
 } from "lucide-react";
 import UserInput from "@/components/ui/UserInput";
-import { DUMMY_USERS } from "@/utils/dataDummy";
+import { useAdminCreateCourse } from "@/_hooks/useCourses";
+import { useForm } from "react-hook-form";
+import { useAdminUser } from "@/_hooks/useUsers";
+import { toMinutes } from "@/utils/dateFormatter";
 
 export default function AdminCourseCreate() {
   useDocumentTitle("Tambah Jadwal");
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const createCourseMutation = useAdminCreateCourse();
 
-  // Mapping data users untuk options select
-  const userOptions = useMemo(
-    () => [
-      { value: "", label: "-- Pilih Mahasiswa --" },
-      ...DUMMY_USERS.filter((u) => u.role === "mahasiswa").map((u) => ({
-        value: u.id,
-        label: `${u.nama} - ${u.nim}`,
-      })),
-    ],
-    [],
-  );
+  // Ambil data user dari API
+  const { users, isLoading: isUserLoading } = useAdminUser({});
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/admin/courses");
-    }, 1000);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitted, isSubmitting },
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      user_id: "",
+      nama_matkul: "",
+      nama_dosen: "",
+      hari: "",
+      jam_mulai: "",
+      jam_selesai: "",
+      ruangan: "",
+    },
+  });
+
+  const onSubmit = async (data) => {
+    setError("");
+
+    if (toMinutes(data.jam_selesai) <= toMinutes(data.jam_mulai)) {
+      setError("Jam selesai harus lebih dari jam mulai");
+      return;
+    }
+
+    // Ambil FormData langsung dari form HTML
+    const payload = new FormData();
+    for (const key in data) {
+      payload.append(key, data[key]);
+    }
+
+    await createCourseMutation.mutateAsync(payload);
   };
 
   return (
@@ -68,7 +90,7 @@ export default function AdminCourseCreate() {
       {/* Form */}
       <div className="flex justify-center">
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           className="mx-5 w-full bg-white rounded-xl border border-gray-200 p-6 shadow-xl space-y-6 md:p-8 lg:w-3/4"
         >
           {/* Nama Mahasiswa */}
@@ -77,19 +99,32 @@ export default function AdminCourseCreate() {
             icon={User}
             color="dark"
             as="select"
-            name="user_id"
             required
-            options={userOptions}
+            {...register("user_id", { required: "Mahasiswa wajib dipilih" })}
+            error={isSubmitted && errors.user_id?.message}
+            disabled={isUserLoading}
+            options={[
+              { value: "", label: "-- Pilih Mahasiswa --" },
+              ...users
+                .filter((u) => u.role !== "admin")
+                .map((u) => ({
+                  value: u.id,
+                  label: `${u.name} - ${u.nim}`,
+                })),
+            ]}
           />
 
           {/* Nama Mata Kuliah */}
           <UserInput
             label="Nama Mata Kuliah"
-            icon={BookOpen}
+            icon={BookOpenText}
             color="dark"
-            name="nama_matkul"
             placeholder="Masukkan nama mata kuliah"
             required
+            {...register("nama_matkul", {
+              required: "Nama matkul wajib diisi",
+            })}
+            error={isSubmitted && errors.nama_matkul?.message}
           />
 
           {/* Nama Dosen */}
@@ -97,9 +132,30 @@ export default function AdminCourseCreate() {
             label="Nama Dosen"
             icon={Briefcase}
             color="dark"
-            name="nama_dosen"
             placeholder="Masukkan nama dosen mata kuliah"
             required
+            {...register("nama_dosen", { required: "Nama dosen wajib diisi" })}
+            error={isSubmitted && errors.nama_dosen?.message}
+          />
+
+          {/* Hari */}
+          <UserInput
+            label="Hari"
+            icon={CalendarDays}
+            color="dark"
+            as="select"
+            required
+            {...register("hari", { required: "Hari wajib dipilih" })}
+            error={isSubmitted && errors.hari?.message}
+            options={[
+              { value: "", label: "-- Pilih Hari --" },
+              { value: "senin", label: "Senin" },
+              { value: "selasa", label: "Selasa" },
+              { value: "rabu", label: "Rabu" },
+              { value: "kamis", label: "Kamis" },
+              { value: "jumat", label: "Jumat" },
+              { value: "sabtu", label: "Sabtu" },
+            ]}
           />
 
           {/* Jam Mulai dan Selesai */}
@@ -109,16 +165,20 @@ export default function AdminCourseCreate() {
               icon={Clock}
               color="dark"
               type="time"
-              name="jam_mulai"
               required
+              {...register("jam_mulai", { required: "Jam mulai wajib diisi" })}
+              error={isSubmitted && errors.jam_mulai?.message}
             />
             <UserInput
               label="Jam Selesai"
               icon={Clock}
               color="dark"
               type="time"
-              name="jam_selesai"
               required
+              {...register("jam_selesai", {
+                required: "Jam selesai wajib diisi",
+              })}
+              error={isSubmitted && errors.jam_selesai?.message}
             />
           </div>
 
@@ -127,10 +187,18 @@ export default function AdminCourseCreate() {
             label="Ruangan"
             icon={House}
             color="dark"
-            name="ruangan"
             placeholder="Contoh: Ruang A101"
             required
+            {...register("ruangan", { required: "Ruangan wajib diisi" })}
+            error={isSubmitted && errors.ruangan?.message}
           />
+
+          {/* Error Message */}
+          {isSubmitted && error && (
+            <div className="bg-red-100 text-red-700 rounded-lg p-3 mb-2">
+              {error}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-col-reverse md:flex-row justify-end gap-3 pt-4">
@@ -147,10 +215,12 @@ export default function AdminCourseCreate() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting || createCourseMutation.isLoading}
               className="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Menambah..." : "Tambah Jadwal"}
+              {createCourseMutation.isLoading || isSubmitting
+                ? "Menambah..."
+                : "Tambah Jadwal"}
             </motion.button>
           </div>
         </form>
