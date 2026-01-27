@@ -74,3 +74,27 @@ export function useFilteredCourses(apiCourses) {
     setSearch,
   };
 }
+
+/**
+ * Hook untuk filter tasks berdasarkan search (judul tugas, matkul, prioritas)
+ */
+export function useFilteredTasks(apiTasks) {
+  const [search, setSearch] = useState("");
+
+  const filteredTasks = useMemo(() => {
+    return apiTasks.filter((c) => {
+      const searchLower = search.toLowerCase();
+      return (
+        !search ||
+        c.nama_tugas?.toLowerCase().includes(searchLower) ||
+        c.prioritas?.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [apiTasks, search]);
+
+  return {
+    filteredTasks,
+    search,
+    setSearch,
+  };
+}

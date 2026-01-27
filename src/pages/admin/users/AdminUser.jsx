@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Users, Edit, Trash2, Loader2 } from "lucide-react";
+import { Users, Edit, Trash2, Loader2, Search } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import { useAdminChangeStatusUser, useAdminDeleteUser, useAdminUser } from "@/_hooks/useUsers";
+import {
+  useAdminChangeStatusUser,
+  useAdminDeleteUser,
+  useAdminUser,
+} from "@/_hooks/useUsers";
 import TabFilter from "@/components/ui/TabFilter";
 import DataTable from "react-data-table-component";
 import { CONFIG } from "@/utils/tableConfig";
@@ -34,7 +38,7 @@ export default function AdminUser() {
 
   // mutation untuk change status
   const changeStatusMutation = useAdminChangeStatusUser();
-  
+
   // mutation untuk delete user
   const deleteUserMutation = useAdminDeleteUser();
 
@@ -161,16 +165,22 @@ export default function AdminUser() {
 
       {/* Search Input */}
       <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Cari nama, email, atau NIM..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-        />
+        <div className="relative bg-white/50">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
+          />
+          <input
+            type="text"
+            placeholder="Cari nama, email, atau NIM..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
       </div>
 
       {/* Tabs */}

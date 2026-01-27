@@ -4,13 +4,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 /**
- * Ambil daftar course admin dengan pagination & search
+ * Ambil daftar Course admin dengan pagination & search
  */
-export const useAdminCourse = ({
-  page = 1,
-  limit = 10,
-  // search = "",
-}) => {
+export const useAdminCourse = ({ page = 1, limit = 10 }) => {
   const currentRole = useUserRole();
   const enabled = currentRole === "admin";
 
@@ -25,7 +21,8 @@ export const useAdminCourse = ({
     },
     enabled,
     keepPreviousData: true,
-    staleTime: 30000,
+    staleTime: 0, // ubah jadi 0 agar selalu refetch saat mount
+    refetchOnMount: true, // tambahkan ini
     retry: 1,
     select: (res) => ({
       courses: res?.data ?? [],
@@ -60,6 +57,7 @@ export const useAdminCreateCourse = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["admin-courses"] });
       navigate("/admin/courses");
+      window.location.reload();
       console.log("✅ Jadwal berhasil dibuat:", data.message);
     },
     onError: (error) => {
@@ -107,6 +105,7 @@ export const useAdminUpdateCourse = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["admin-courses"] });
       navigate("/admin/courses");
+      window.location.reload();
       console.log("✅ Jadwal berhasil diubah:", data.message);
     },
     onError: (error) => {
@@ -116,7 +115,7 @@ export const useAdminUpdateCourse = () => {
 };
 
 /**
- * Delete course Mutation
+ * Delete Course Mutation
  */
 export const useAdminDeleteCourse = () => {
   const queryClient = useQueryClient();

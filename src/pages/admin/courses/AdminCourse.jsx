@@ -4,7 +4,7 @@ import { useFilteredCourses } from "@/_hooks/utils/useFilteredData";
 import DeleteModal from "@/components/modal/DeleteModal";
 import { formatJam } from "@/utils/dateFormatter";
 import { CONFIG } from "@/utils/tableConfig";
-import { BookOpen, Edit, Loader2, Trash2 } from "lucide-react";
+import { BookOpen, Edit, Loader2, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
@@ -27,7 +27,6 @@ export default function AdminCourse() {
 
   // Hook untuk filter
   const { filteredCourses, search, setSearch } = useFilteredCourses(apiCourses);
-
   // mutation untuk delete course
   const deleteCourseMutation = useAdminDeleteCourse();
 
@@ -76,7 +75,8 @@ export default function AdminCourse() {
     },
     {
       name: "Waktu",
-      selector: (row) => `${formatJam(row.jam_mulai)} - ${formatJam(row.jam_selesai)} WIB`,
+      selector: (row) =>
+        `${formatJam(row.jam_mulai)} - ${formatJam(row.jam_selesai)} WIB`,
       sortable: true,
       wrap: true,
     },
@@ -130,16 +130,22 @@ export default function AdminCourse() {
 
         {/* Search Input */}
         <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Cari nama matkul, dosen, atau ruangan..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+          <div className="relative bg-white/50">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <input
+              type="text"
+              placeholder="Cari nama matkul, dosen, atau ruangan..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
         </div>
 
         {/* Table */}

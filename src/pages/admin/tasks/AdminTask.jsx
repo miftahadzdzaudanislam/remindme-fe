@@ -1,37 +1,43 @@
+import { useAdminDeleteTask, useAdminTask } from "@/_hooks/useTasks";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
+import { useFilteredTasks } from "@/_hooks/utils/useFilteredData";
 import DeleteModal from "@/components/modal/DeleteModal";
 import Badge from "@/components/ui/Badge";
-import { DUMMY_TASKS, DUMMY_USERS, DUMMY_COURSES } from "@/utils/dataDummy";
 import { formatDate } from "@/utils/dateFormatter";
 import { CONFIG } from "@/utils/tableConfig";
-import { CheckSquare, Edit, Loader2, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { CheckSquare, Edit, Loader2, Search, Trash2 } from "lucide-react";
+import { useState } from "react";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
 
 export default function AdminTask() {
   useDocumentTitle("Kelola Tugas");
 
-  const [tasks, setTasks] = useState(DUMMY_TASKS);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  // Gabungkan data tugas dengan user & matkul
-  const tasksWithMeta = useMemo(() => {
-    return tasks.map((task) => ({
-      ...task,
-      user: DUMMY_USERS.find((u) => u.id === task.user_id),
-      course: DUMMY_COURSES.find((c) => c.id === task.course_id),
-    }));
-  }, [tasks]);
+  // Ambil data dari API
+  const {
+    tasks: apiTasks,
+    pagination,
+    isLoading,
+    isError,
+  } = useAdminTask({ page, limit });
+
+  // Hook untuk filter
+  const { filteredTasks, search, setSearch } = useFilteredTasks(apiTasks);
+  // mutation untuk delete course
+    const deleteTaskMutation = useAdminDeleteTask();
 
   const openDeleteModal = (task) => {
     setSelectedTask(task);
     setDeleteModalOpen(true);
   };
 
-  const handleDeleteTask = () => {
-    setTasks((prev) => prev.filter((t) => t.id !== selectedTask.id));
+  const handleDeleteTask = async () => {
+    await deleteTaskMutation.mutateAsync(selectedTask.id);
     setDeleteModalOpen(false);
     setSelectedTask(null);
   };
@@ -44,7 +50,7 @@ export default function AdminTask() {
     },
     {
       name: "Mahasiswa",
-      selector: (row) => row.user?.nama || "-",
+      selector: (row) => row.user?.name || "-",
       sortable: true,
       wrap: true,
     },
@@ -138,16 +144,45 @@ export default function AdminTask() {
           </Link>
         </div>
 
+        {/* Search Input */}
+        <div className="mb-4">
+          <div className="relative bg-white/50">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <input
+              type="text"
+              placeholder="Cari nama tugas atau prioritas..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
         {/* Table */}
         <div className="max-w-100 overflow-x-auto md:min-w-full rounded-lg border border-gray-200">
           <DataTable
             columns={columns}
-            data={tasksWithMeta}
+            data={filteredTasks}
             pagination
-            paginationPerPage={10}
+            paginationPerPage={limit}
             paginationRowsPerPageOptions={[10, 25, 50]}
+            paginationTotalRows={pagination?.total || filteredTasks.length}
+            onChangePage={(p) => setPage(p)}
+            onChangeRowsPerPage={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+            progressPending={isLoading}
             noDataComponent={
-              <div className="py-8 text-gray-500">Tidak ada data tugas</div>
+              <div className="py-8 text-gray-500">
+                {isError ? "Gagal memuat data" : "Tidak ada data tugas"}
+              </div>
             }
             progressComponent={
               <div className="flex justify-center py-10">

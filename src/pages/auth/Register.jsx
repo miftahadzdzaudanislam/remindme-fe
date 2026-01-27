@@ -59,7 +59,7 @@ export default function Register() {
 
   return (
     <>
-      <div className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-secondary to-blue-700 p-4 overflow-hidden">
+      <div className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-secondary to-primary p-4 overflow-hidden">
         {/* Background Ornaments */}
         <motion.div
           animate={{ opacity: [0.3, 0.6, 0.3] }}

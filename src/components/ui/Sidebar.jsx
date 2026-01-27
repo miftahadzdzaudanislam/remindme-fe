@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLogout } from "@/_hooks/useAuth";
+import { getUserData, useLogout } from "@/_hooks/useAuth";
 
 export default function Sidebar({ onToggle }) {
   const logoutMutation = useLogout();
@@ -19,6 +19,13 @@ export default function Sidebar({ onToggle }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const { pathname } = useLocation();
+  const user = getUserData();
+
+  const displayEmail =
+    user?.email?.charAt(0).toUpperCase() + user?.email?.slice(1) ||
+    "admin@remindme.com";
+  const displayName =
+    user?.name?.charAt(0).toUpperCase() + user?.name?.slice(1) || "Admin";
 
   const menus = [
     { label: "Dashboard", icon: Home, to: "/admin" },
@@ -133,8 +140,8 @@ export default function Sidebar({ onToggle }) {
             </div>
             {open && (
               <div className="text-left text-sm">
-                <p className="font-medium">Admin</p>
-                <p className="text-xs text-gray-500">admin@gmail.com</p>
+                <p className="font-medium">{displayName}</p>
+                <p className="text-xs text-gray-500">{displayEmail}</p>
               </div>
             )}
           </button>

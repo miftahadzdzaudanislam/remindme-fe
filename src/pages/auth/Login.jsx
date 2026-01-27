@@ -37,7 +37,7 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen bg-linear-to-br from-secondary to-blue-700 flex items-center justify-center p-4 overflow-hidden">
+    <div className="relative min-h-screen bg-linear-to-br from-secondary to-primary flex items-center justify-center p-4 overflow-hidden">
       {/* Back Button */}
       <motion.button
         initial={{ opacity: 0, x: -20 }}

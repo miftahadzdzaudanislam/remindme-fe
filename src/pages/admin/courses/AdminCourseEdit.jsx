@@ -22,6 +22,7 @@ import { toMinutes } from "@/utils/dateFormatter";
 
 export default function AdminCourseEdit() {
   useDocumentTitle("Edit Jadwal");
+  
   const navigate = useNavigate();
   const { id } = useParams();
   const [error, setError] = useState("");
@@ -66,7 +67,7 @@ export default function AdminCourseEdit() {
   }, [course, reset]);
 
   if (isCourseLoading || !course) {
-    return <div className="text-center py-10">Memuat data jadwal...</div>;
+    return <div className="text-center py-10">Memuat data...</div>;
   }
 
   const onSubmit = async (data) => {

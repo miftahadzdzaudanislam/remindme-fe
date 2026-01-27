@@ -1,12 +1,18 @@
 import Sidebar from "@/components/ui/Sidebar";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
+import { getUserData } from "@/_hooks/useAuth";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const currentYear = new Date().getFullYear();
+  const user = getUserData();
+
+  const displayRole =
+    user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || "Admin";
+  const displayName =
+    user?.name?.charAt(0).toUpperCase() + user?.name?.slice(1) || "Admin";
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
@@ -24,12 +30,12 @@ export default function DashboardLayout() {
           <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b bg-white pe-6 ps-15 shadow-sm md:p-6">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-semibold text-primary">
-                Dashboard Admin
+                Dashboard {displayRole}
               </h2>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-xs text-gray-600 md:text-sm">
-                Selamat datang, Admin 👋
+                Selamat datang, {displayName} 👋
               </span>
             </div>
           </header>

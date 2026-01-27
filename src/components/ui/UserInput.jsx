@@ -14,6 +14,7 @@ const UserInput = forwardRef(
       passwordSuffix = false,
       error,
       disabled = false,
+      required,
       ...props
     },
     ref,
@@ -46,7 +47,7 @@ const UserInput = forwardRef(
         {label && (
           <label className={`mb-2 block text-sm font-medium ${labelColor}`}>
             {label}
-            {props.required && <span className="text-red-500 ml-1">*</span>}
+            {required && <span className="text-red-500 ml-1">*</span>}
           </label>
         )}
 

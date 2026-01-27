@@ -1,7 +1,6 @@
-// ADMIN SERVICE
-
 import API from "@/_api";
 
+// ADMIN SERVICE
 /**
  * Ambil daftar course admin dengan pagination & search
  */

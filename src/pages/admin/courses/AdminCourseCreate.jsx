@@ -20,6 +20,7 @@ import { toMinutes } from "@/utils/dateFormatter";
 
 export default function AdminCourseCreate() {
   useDocumentTitle("Tambah Jadwal");
+  
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const createCourseMutation = useAdminCreateCourse();
@@ -122,7 +123,7 @@ export default function AdminCourseCreate() {
             placeholder="Masukkan nama mata kuliah"
             required
             {...register("nama_matkul", {
-              required: "Nama matkul wajib diisi",
+              required: "Nama mata kuliah wajib diisi",
             })}
             error={isSubmitted && errors.nama_matkul?.message}
           />
