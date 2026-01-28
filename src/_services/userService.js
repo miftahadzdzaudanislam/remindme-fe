@@ -1,6 +1,6 @@
 import API from "@/_api";
 
-// ADMIN SERVICE
+// ===================== ADMIN SERVICES =====================
 /**
  * Ambil daftar user admin dengan pagination & search
  */
@@ -42,7 +42,7 @@ export const adminDeleteUser = async (userId) => {
 };
 
 /**
- * Ubah status user
+ * Admin Ubah status user
  */
 export const adminChangeUserStatus = async (userId, { status }) => {
   try {
@@ -54,4 +54,21 @@ export const adminChangeUserStatus = async (userId, { status }) => {
     console.log("Error changing status user:", error);
     throw error;
   }
+};
+
+/**
+ * Mengambil data analytics untuk admin dashboard.
+ */
+export const adminGetDashboard = async (params = {}) => {
+  const response = await API.get("/admin/dashboard", params);
+  return response.data.data || response.data;
+};
+
+// ===================== MAHASISWA SERVICES =====================
+/**
+ * Mengambil data analytics untuk mahasiswa dashboard.
+ */
+export const MahasiswaGetDashboard = async (params = {}) => {
+  const response = await API.get("/mahasiswa/dashboard", params);
+  return response.data.data || response.data;
 };

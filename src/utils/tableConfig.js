@@ -14,6 +14,22 @@ export const CONFIG = {
     { id: "suspended", label: "Suspended", status: "suspended" },
   ],
 
+  // tab hari
+  hari_tabs: [
+    { id: "semua", label: "Semua" },
+    { id: "senin", label: "Senin" },
+    { id: "selasa", label: "Selasa" },
+    { id: "rabu", label: "Rabu" },
+    { id: "kamis", label: "Kamis" },
+    { id: "jumat", label: "Jumat" },
+    { id: "sabtu", label: "Sabtu" },
+  ],
+  status_tabs: [
+    { id: "semua", label: "Semua" },
+    { id: "pending", label: "Pending" },
+    { id: "done", label: "Done" },
+  ],
+
   // table style
   tableStyles: {
     cells: { style: { paddingTop: "14px", paddingBottom: "14px" } },

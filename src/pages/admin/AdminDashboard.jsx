@@ -3,36 +3,38 @@ import { motion } from "framer-motion";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import StatCard from "@/components/ui/StatCard";
 import Badge from "@/components/ui/Badge";
-import { DUMMY_USERS } from "@/utils/dataDummy";
-import { formatDate } from "@/utils/dateFormatter";
+import { formatTimeAgo } from "@/utils/dateFormatter";
+import { useAdminDashboard } from "@/_hooks/useUsers";
 
 export default function AdminDashboard() {
   useDocumentTitle("Dashboard Admin");
+
+  const { data, isLoading, error } = useAdminDashboard();
+
+  // Default value jika data belum ada
+  const summary = data?.summary || {};
+  const recentLogins = data?.recent_logins || [];
 
   const STATS = [
     {
       icon: Users,
       title: "Total Mahasiswa",
-      value: 150,
+      value: summary.total_students ?? 0,
       color: "border-indigo-300 bg-indigo-100 text-indigo-900",
     },
     {
       icon: BookOpen,
       title: "Total Mata Kuliah",
-      value: 42,
+      value: summary.total_courses ?? 0,
       color: "border-yellow-300 bg-yellow-100 text-yellow-800",
     },
     {
       icon: CheckSquare,
       title: "Total Tugas",
-      value: 1234,
+      value: summary.total_tasks ?? 0,
       color: "border-emerald-300 bg-emerald-100 text-emerald-800",
     },
   ];
-
-  const recentLogins = DUMMY_USERS.sort(
-    (a, b) => new Date(b.terakhirLogin) - new Date(a.terakhirLogin),
-  ).slice(0, 5);
 
   return (
     <motion.div
@@ -78,39 +80,47 @@ export default function AdminDashboard() {
           <h2 className="text-xl font-semibold text-primary">Login Terbaru</h2>
         </div>
 
-        <div className="max-h-72 space-y-4 overflow-y-auto pr-2">
-          {recentLogins.length === 0 ? (
-            <p className="text-center text-gray-500">
-              Belum ada aktivitas Login.
-            </p>
-          ) : (
-            recentLogins.map((user) => (
-              <motion.div
-                key={user.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="space-y-1 rounded-lg bg-light p-5 transition hover:bg-primary/10"
-              >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="text-sm font-semibold capitalize text-gray-800">
-                      {user.nama}
+        {isLoading ? (
+          <div className="text-center text-gray-500">Memuat data...</div>
+        ) : error ? (
+          <div className="text-center text-red-500">
+            Gagal memuat data dashboard.
+          </div>
+        ) : (
+          <div className="max-h-72 space-y-4 overflow-y-auto pr-2">
+            {recentLogins.length === 0 ? (
+              <p className="text-center text-gray-500">
+                Belum ada aktivitas Login.
+              </p>
+            ) : (
+              recentLogins.map((user) => (
+                <motion.div
+                  key={user.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-1 rounded-lg bg-light p-5 transition hover:bg-primary/10"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="text-sm font-semibold capitalize text-gray-800">
+                        {user.name}
+                      </div>
+                      <div className="text-xs text-gray-500">{user.email}</div>
+                      <div className="text-sm text-gray-600">
+                        Terakhir Login: {formatTimeAgo(user.terakhir_login)}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">{user.email}</div>
-                    <div className="text-sm text-gray-600">
-                      Terakhir Login: {formatDate(user.terakhirLogin)}
-                    </div>
+                    <Badge
+                      value={user.role}
+                      variant={user.role === "admin" ? "danger" : "info"}
+                      size="md"
+                    />
                   </div>
-                  <Badge
-                    value={user.role}
-                    variant={user.role === "admin" ? "danger" : "info"}
-                    size="md"
-                  />
-                </div>
-              </motion.div>
-            ))
-          )}
-        </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );

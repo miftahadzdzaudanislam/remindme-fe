@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import * as authService from "@/_services/authService";
 
+// ===================== AUTHENTICATION =====================
 /**
  * Login Mutation
  */

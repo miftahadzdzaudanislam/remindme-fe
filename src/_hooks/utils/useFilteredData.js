@@ -51,49 +51,73 @@ export function useFilteredUsers(apiUsers) {
 }
 
 /**
- * Hook untuk filter courses berdasarkan search (nama matkul, dosen, ruangan)
+ * Hook untuk filter courses berdasarkan tab hari dan search 
+ * (nama matkul, dosen, ruangan)
  */
 export function useFilteredCourses(apiCourses) {
+  const [activeTab, setActiveTab] = useState("semua");
   const [search, setSearch] = useState("");
 
   const filteredCourses = useMemo(() => {
     return apiCourses.filter((c) => {
+      // Filter berdasarkan tab hari
+      const hariMatch =
+        activeTab === "semua" ||
+        (c.hari && c.hari.toLowerCase() === activeTab);
+
+      // Filter berdasarkan search
       const searchLower = search.toLowerCase();
-      return (
+      const searchMatch =
         !search ||
         c.nama_matkul?.toLowerCase().includes(searchLower) ||
         c.nama_dosen?.toLowerCase().includes(searchLower) ||
-        c.ruangan?.toLowerCase().includes(searchLower)
-      );
+        c.ruangan?.toLowerCase().includes(searchLower);
+
+      return hariMatch && searchMatch;
     });
-  }, [apiCourses, search]);
+  }, [apiCourses, activeTab, search]);
 
   return {
     filteredCourses,
+    activeTab,
+    setActiveTab,
     search,
     setSearch,
   };
 }
 
 /**
- * Hook untuk filter tasks berdasarkan search (judul tugas, matkul, prioritas)
+ * Hook untuk filter tasks berdasarkan 
+ * tab status (done/pending) dan search (judul tugas, matkul, prioritas)
  */
 export function useFilteredTasks(apiTasks) {
+  const [activeTab, setActiveTab] = useState("semua");
   const [search, setSearch] = useState("");
 
   const filteredTasks = useMemo(() => {
-    return apiTasks.filter((c) => {
+    return apiTasks.filter((t) => {
+      // Filter berdasarkan tab status
+      const statusMatch =
+        activeTab === "semua" ||
+        (activeTab === "done" && t.is_done) ||
+        (activeTab === "pending" && !t.is_done);
+
+      // Filter berdasarkan search
       const searchLower = search.toLowerCase();
-      return (
+      const searchMatch =
         !search ||
-        c.nama_tugas?.toLowerCase().includes(searchLower) ||
-        c.prioritas?.toLowerCase().includes(searchLower)
-      );
+        t.nama_tugas?.toLowerCase().includes(searchLower) ||
+        t.nama_matkul?.toLowerCase().includes(searchLower) ||
+        t.prioritas?.toLowerCase().includes(searchLower);
+
+      return statusMatch && searchMatch;
     });
-  }, [apiTasks, search]);
+  }, [apiTasks, activeTab, search]);
 
   return {
     filteredTasks,
+    activeTab,
+    setActiveTab,
     search,
     setSearch,
   };

@@ -1,28 +1,85 @@
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   BookOpen,
   Clock,
   House,
   Briefcase,
+  CalendarDays,
 } from "lucide-react";
 import UserInput from "@/components/ui/UserInput";
+import {
+  useMahasiswaCourseDetail,
+  useMahasiswaUpdateCourse,
+} from "@/_hooks/useCourses";
+import { useForm } from "react-hook-form";
+import { toMinutes } from "@/utils/dateFormatter";
 
 export default function MahasiswaCourseEdit() {
   useDocumentTitle("Edit Jadwal");
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/mahasiswa/courses");
-    }, 1000);
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [error, setError] = useState("");
+  const updateCourseMutation = useMahasiswaUpdateCourse();
+
+  // Ambil detail course
+  const { course, isLoading: isCourseLoading } = useMahasiswaCourseDetail(id);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitted, isSubmitting },
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      nama_matkul: "",
+      nama_dosen: "",
+      hari: "",
+      jam_mulai: "",
+      jam_selesai: "",
+      ruangan: "",
+    },
+  });
+
+  // Set default value ketika data course sudah didapat
+  useEffect(() => {
+    if (course) {
+      reset({
+        nama_matkul: course.nama_matkul ?? "",
+        nama_dosen: course.nama_dosen ?? "",
+        hari: course.hari ?? "",
+        jam_mulai: course.jam_mulai?.slice(0, 5) ?? "",
+        jam_selesai: course.jam_selesai?.slice(0, 5) ?? "",
+        ruangan: course.ruangan ?? "",
+      });
+    }
+  }, [course, reset]);
+
+  if (isCourseLoading || !course) {
+    return <div className="text-center py-10">Memuat data...</div>;
+  }
+
+  const onSubmit = async (data) => {
+    setError("");
+
+    if (toMinutes(data.jam_selesai) <= toMinutes(data.jam_mulai)) {
+      setError("Jam selesai harus lebih dari jam mulai");
+      return;
+    }
+
+    // Ambil FormData langsung dari form HTML
+    const payload = new FormData();
+    payload.append("_method", "PUT");
+    for (const key in data) {
+      payload.append(key, data[key]);
+    }
+
+    await updateCourseMutation.mutateAsync({ id, courseData: payload });
   };
 
   return (
@@ -54,18 +111,20 @@ export default function MahasiswaCourseEdit() {
       {/* Form */}
       <div className="flex justify-center">
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           className="mx-5 w-full bg-white rounded-xl border border-gray-200 p-6 shadow-xl space-y-6 md:p-8 lg:w-3/4"
         >
-
           {/* Nama Mata Kuliah */}
           <UserInput
             label="Nama Mata Kuliah"
             icon={BookOpen}
             color="dark"
-            name="nama_matkul"
             placeholder="Masukkan nama mata kuliah"
             required
+            {...register("nama_matkul", {
+              required: "Nama matkul wajib diisi",
+            })}
+            error={isSubmitted && errors.nama_matkul?.message}
           />
 
           {/* Nama Dosen */}
@@ -73,9 +132,30 @@ export default function MahasiswaCourseEdit() {
             label="Nama Dosen"
             icon={Briefcase}
             color="dark"
-            name="nama_dosen"
             placeholder="Masukkan nama dosen mata kuliah"
             required
+            {...register("nama_dosen", { required: "Nama dosen wajib diisi" })}
+            error={isSubmitted && errors.nama_dosen?.message}
+          />
+
+          {/* Hari */}
+          <UserInput
+            label="Hari"
+            icon={CalendarDays}
+            color="dark"
+            as="select"
+            required
+            {...register("hari", { required: "Hari wajib dipilih" })}
+            error={isSubmitted && errors.hari?.message}
+            options={[
+              { value: "", label: "-- Pilih Hari --" },
+              { value: "senin", label: "Senin" },
+              { value: "selasa", label: "Selasa" },
+              { value: "rabu", label: "Rabu" },
+              { value: "kamis", label: "Kamis" },
+              { value: "jumat", label: "Jumat" },
+              { value: "sabtu", label: "Sabtu" },
+            ]}
           />
 
           {/* Jam Mulai dan Selesai */}
@@ -85,16 +165,20 @@ export default function MahasiswaCourseEdit() {
               icon={Clock}
               color="dark"
               type="time"
-              name="jam_mulai"
               required
+              {...register("jam_mulai", { required: "Jam mulai wajib diisi" })}
+              error={isSubmitted && errors.jam_mulai?.message}
             />
             <UserInput
               label="Jam Selesai"
               icon={Clock}
               color="dark"
               type="time"
-              name="jam_selesai"
               required
+              {...register("jam_selesai", {
+                required: "Jam selesai wajib diisi",
+              })}
+              error={isSubmitted && errors.jam_selesai?.message}
             />
           </div>
 
@@ -103,10 +187,18 @@ export default function MahasiswaCourseEdit() {
             label="Ruangan"
             icon={House}
             color="dark"
-            name="ruangan"
             placeholder="Contoh: Ruang A101"
             required
+            {...register("ruangan", { required: "Ruangan wajib diisi" })}
+            error={isSubmitted && errors.ruangan?.message}
           />
+
+          {/* Error Message */}
+          {isSubmitted && error && (
+            <div className="bg-red-100 text-red-700 rounded-lg p-3 mb-2">
+              {error}
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex flex-col-reverse md:flex-row justify-end gap-3 pt-4">
@@ -123,10 +215,12 @@ export default function MahasiswaCourseEdit() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting || updateCourseMutation.isLoading}
               className="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Menyimpan..." : "Simpan Jadwal"}
+              {updateCourseMutation.isLoading || isSubmitting
+                ? "Menyimpan..."
+                : "Simpan Jadwal"}
             </motion.button>
           </div>
         </form>

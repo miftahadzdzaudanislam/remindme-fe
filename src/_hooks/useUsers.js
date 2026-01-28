@@ -3,6 +3,7 @@ import * as userService from "@/_services/userService";
 import { useUserRole } from "@/_hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
+// ===================== ADMIN HOOKS =====================
 /**
  * Ambil daftar user admin dengan pagination & search
  */
@@ -107,5 +108,46 @@ export const useAdminChangeStatusUser = () => {
     onError: (error) => {
       console.error("❌ Error changing status:", error.message);
     },
+  });
+};
+
+/**
+ *  Mengambil semua data admin dashboard
+ */
+export const useAdminDashboard = () => {
+  const currentRole = useUserRole();
+  const enabled = currentRole === "admin";
+
+  return useQuery({
+    queryKey: ["admin-dashboard"],
+    queryFn: async () => {
+      const res = await userService.adminGetDashboard();
+      return res;
+    },
+    enabled,
+    staleTime: 1 * 60 * 1000,
+    cacheTime: 1 * 60 * 1000,
+    retry: 1,
+  });
+};
+
+// ===================== MAHASISWA HOOKS =====================
+/**
+ *  Mengambil semua data mahasiswa dashboard
+ */
+export const useMahasiswaDashboard = () => {
+  const currentRole = useUserRole();
+  const enabled = currentRole === "mahasiswa";
+
+  return useQuery({
+    queryKey: ["mahasiswa-dashboard"],
+    queryFn: async () => {
+      const res = await userService.MahasiswaGetDashboard();
+      return res;
+    },
+    enabled,
+    staleTime: 1 * 60 * 1000,
+    cacheTime: 1 * 60 * 1000,
+    retry: 1,
   });
 };

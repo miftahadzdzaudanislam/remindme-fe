@@ -274,7 +274,7 @@ export default function AdminTaskEdit() {
             >
               {updateTaskMutation.isLoading || isSubmitting
                 ? "Menambah..."
-                : "Tambah Tugas"}
+                : "Simpan Tugas"}
             </motion.button>
           </div>
         </form>

@@ -7,6 +7,7 @@ import {
   X,
   User,
   LogOut,
+  ArrowLeftCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -20,6 +21,7 @@ export default function Sidebar({ onToggle }) {
   const [profileOpen, setProfileOpen] = useState(false);
   const { pathname } = useLocation();
   const user = getUserData();
+  const role = user?.role;
 
   const displayEmail =
     user?.email?.charAt(0).toUpperCase() + user?.email?.slice(1) ||
@@ -27,16 +29,20 @@ export default function Sidebar({ onToggle }) {
   const displayName =
     user?.name?.charAt(0).toUpperCase() + user?.name?.slice(1) || "Admin";
 
-  const menus = [
+  const adminMenus = [
     { label: "Dashboard", icon: Home, to: "/admin" },
     { label: "Mahasiswa", icon: Users, to: "/admin/users" },
     { label: "Mata kuliah", icon: BookOpen, to: "/admin/courses" },
     { label: "Tugas", icon: CheckSquare, to: "/admin/tasks" },
-    // Menu Mahasiswa
-    // { label: "Dashboard", icon: Home, to: "/mahasiswa" },
-    // { label: "Jadwal", icon: BookOpen, to: "/mahasiswa/courses" },
-    // { label: "Tugas", icon: CheckSquare, to: "/mahasiswa/tasks" },
   ];
+
+  const mahasiswaMenus = [
+    { label: "Dashboard", icon: Home, to: "/mahasiswa" },
+    { label: "Jadwal", icon: BookOpen, to: "/mahasiswa/courses" },
+    { label: "Tugas", icon: CheckSquare, to: "/mahasiswa/tasks" },
+  ];
+
+  const menus = role === "admin" ? adminMenus : mahasiswaMenus;
 
   const toggleSidebar = () => {
     setOpen(!open);
@@ -125,6 +131,18 @@ export default function Sidebar({ onToggle }) {
                 </Link>
               </li>
             ))}
+          </ul>
+
+          <ul className="space-y-1 mt-6 border-t pt-3">
+            <li>
+              <Link
+                to="/"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition text-gray-700 hover:bg-gray-100 ${open ? "" : "justify-center"}`}
+              >
+                <ArrowLeftCircle size={18} />
+                {open && "Kembali ke Home"}
+              </Link>
+            </li>
           </ul>
         </nav>
 

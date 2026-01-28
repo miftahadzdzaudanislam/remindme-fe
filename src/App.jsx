@@ -1,3 +1,4 @@
+import GuestRoute from "@/components/auth/GuestRole";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import RoleRoute from "@/components/auth/RoleRoute";
 import NotFound from "@/components/NotFoundPage";
@@ -35,9 +36,8 @@ function App() {
         </Route>
 
         {/* PROTECTED ROUTES */}
-        {/* <Route element={<ProtectedRoute />}>
-
-          <Route element={<RoleRoute allowedRoles={["admin"]} />}> */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<RoleRoute allowedRoles={["admin"]} />}>
             {/* ADMIN ROUTES */}
             <Route path="admin" element={<DashboardLayout />}>
               <Route index element={<AdminDashboard />} />
@@ -71,9 +71,9 @@ function App() {
                 <Route path="details/:id" element={"DetailTask"} />
               </Route>
             </Route>
-          {/* </Route> */}
+          </Route>
 
-          {/* <Route element={<RoleRoute allowedRoles={["mahasiswa"]} />}> */}
+          <Route element={<RoleRoute allowedRoles={["mahasiswa"]} />}>
             {/* MAHASISwA ROUTES */}
             <Route path="mahasiswa" element={<DashboardLayout />}>
               <Route index element={<MahasiswaDashboard />} />
@@ -97,13 +97,14 @@ function App() {
                 <Route path="details/:id" element={"DetailTask"} />
               </Route>
             </Route>
-          {/* </Route>
-          
-        </Route> */}
+          </Route>
+        </Route>
 
         {/* AUTH ROUTES */}
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
+        <Route element={<GuestRoute />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
 
         <Route path="unauthorized" element={<Unauthorized />} />
         <Route path="*" element={<NotFound />} />

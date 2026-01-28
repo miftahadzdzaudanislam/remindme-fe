@@ -1,43 +1,54 @@
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import { useFilteredData } from "@/_hooks/utils/useFilteredData";
+import { useFilteredCourses } from "@/_hooks/utils/useFilteredData";
 import DeleteModal from "@/components/modal/DeleteModal";
 import TabFilter from "@/components/ui/TabFilter";
-import { DUMMY_COURSES } from "@/utils/dataDummy";
 import { CONFIG } from "@/utils/tableConfig";
-import { getTodayIndonesian } from "@/utils/dateFormatter";
-import { BookOpen, Edit, Loader2, Trash2 } from "lucide-react";
+import { BookOpen, Edit, Loader2, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
-
-const HARI_TABS = [
-  { id: "semua", label: "Semua" },
-  { id: "senin", label: "Senin" },
-  { id: "selasa", label: "Selasa" },
-  { id: "rabu", label: "Rabu" },
-  { id: "kamis", label: "Kamis" },
-  { id: "jumat", label: "Jumat" },
-  { id: "sabtu", label: "Sabtu" },
-];
+import {
+  useMahasiswaCourse,
+  useMahasiswaDeleteCourse,
+} from "@/_hooks/useCourses";
+import { formatHours } from "@/utils/dateFormatter";
 
 export default function MahasiswaCourse() {
   useDocumentTitle("Kelola Mata Kuliah");
 
-  const userId = 2;
-  const [courses, setCourses] = useState(
-    DUMMY_COURSES.filter((course) => course.user_id === userId)
-  );
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const { filteredData, activeTab, setActiveTab } = useFilteredData(
-    courses,
-    (data, tab) => data.filter((course) => course.hari === tab),
-    getTodayIndonesian()
-  );
+  // Ambil data dari API
+  const {
+    courses: apiCourses,
+    pagination,
+    isLoading,
+    isError,
+  } = useMahasiswaCourse({ page, limit });
 
-  const handleDeleteCourse = () => {
-    setCourses((prev) => prev.filter((c) => c.id !== selectedCourse.id));
+  // Hook untuk filter (sudah termasuk tab hari & search)
+  const { filteredCourses, activeTab, setActiveTab, search, setSearch } =
+    useFilteredCourses(apiCourses);
+
+  // Filter berdasarkan tab hari
+  const filteredData =
+    activeTab === "semua"
+      ? filteredCourses
+      : filteredCourses.filter((c) => c.hari?.toLowerCase() === activeTab);
+
+  // mutation untuk delete course
+  const deleteCourseMutation = useMahasiswaDeleteCourse();
+
+  const openDeleteModal = (course) => {
+    setSelectedCourse(course);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteCourse = async () => {
+    await deleteCourseMutation.mutateAsync(selectedCourse.id);
     setDeleteModalOpen(false);
     setSelectedCourse(null);
   };
@@ -45,7 +56,7 @@ export default function MahasiswaCourse() {
   const columns = [
     {
       name: "No.",
-      cell: (_, index) => index + 1,
+      cell: (_, index) => (page - 1) * limit + index + 1,
       width: "60px",
     },
     {
@@ -58,7 +69,7 @@ export default function MahasiswaCourse() {
       name: "Dosen",
       selector: (row) => row.nama_dosen,
       sortable: true,
-      width: "160px",
+      width: "190px",
     },
     {
       name: "Hari",
@@ -69,9 +80,10 @@ export default function MahasiswaCourse() {
     },
     {
       name: "Waktu",
-      selector: (row) => `${row.jam_mulai} - ${row.jam_selesai} WIB`,
+      selector: (row) =>
+        `${formatHours(row.jam_mulai)} - ${formatHours(row.jam_selesai)} WIB`,
       sortable: true,
-      wrap: true,
+      width: "150px",
     },
     {
       name: "Ruangan",
@@ -91,10 +103,7 @@ export default function MahasiswaCourse() {
             <Edit size={18} />
           </Link>
           <button
-            onClick={() => {
-              setSelectedCourse(row);
-              setDeleteModalOpen(true);
-            }}
+            onClick={() => openDeleteModal(row)}
             className="text-danger hover:text-danger-hover cursor-pointer"
             title="Hapus Jadwal"
           >
@@ -123,18 +132,55 @@ export default function MahasiswaCourse() {
           </Link>
         </div>
 
-        <TabFilter tabs={HARI_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Search Input */}
+        <div className="mb-4">
+          <div className="relative bg-white/50">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <input
+              type="text"
+              placeholder="Cari nama matkul, dosen, atau ruangan..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <TabFilter
+          tabs={CONFIG.hari_tabs}
+          activeTab={activeTab}
+          onTabChange={(tabId) => {
+            setActiveTab(tabId);
+            setPage(1);
+          }}
+        />
 
         <div className="max-w-100 overflow-x-auto md:min-w-full rounded-lg border border-gray-200">
           <DataTable
             columns={columns}
             data={filteredData}
             pagination
-            paginationPerPage={10}
+            paginationPerPage={limit}
             paginationRowsPerPageOptions={[10, 25, 50]}
+            paginationTotalRows={pagination?.total || filteredData.length}
+            onChangePage={(p) => setPage(p)}
+            onChangeRowsPerPage={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
             noDataComponent={
-              <div className="py-8 text-gray-500">Tidak ada data mata kuliah</div>
+              <div className="py-8 text-gray-500">
+                {isError ? "Gagal memuat data" : "Tidak ada data mata kuliah"}
+              </div>
             }
+            progressPending={isLoading}
             progressComponent={
               <div className="flex justify-center py-10">
                 <Loader2 className="animate-spin h-6 w-6 text-primary" />

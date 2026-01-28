@@ -1,6 +1,9 @@
 import API from "@/_api";
 
-// User Login
+// ===================== AUTHENTICATION =====================
+/**
+ * User Login
+ */
 export const login = async (credentials) => {
   try {
     const response = await API.post("/login", credentials);
@@ -18,7 +21,9 @@ export const login = async (credentials) => {
   }
 };
 
-// Register User
+/**
+ * Register User
+ */
 export const register = async (userData) => {
   try {
     const response = await API.post("/register", userData);
@@ -35,7 +40,9 @@ export const register = async (userData) => {
   }
 };
 
-// Logout User
+/**
+ * Logout User
+ */
 export const logout = async ({ token }) => {
   try {
     const response = await API.post("/logout", { token });
@@ -48,7 +55,9 @@ export const logout = async ({ token }) => {
   }
 };
 
-// Refresh Token
+/**
+ * Refresh Token
+ */
 export const refreshToken = async ({ token }) => {
   const safeToken = token || localStorage.getItem("authToken");
   if (!safeToken) throw new Error("Missing token");

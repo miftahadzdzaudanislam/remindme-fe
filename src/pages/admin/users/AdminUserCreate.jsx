@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminCreateUser } from "@/_hooks/useUsers";
 import {
@@ -20,11 +20,14 @@ export default function AdminUserCreate() {
   useDocumentTitle("Tambah Mahasiswa");
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [roleValue, setRoleValue] = useState("");
   const createUserMutation = useAdminCreateUser();
 
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitted, isSubmitting },
   } = useForm({
     mode: "onChange",
@@ -40,6 +43,16 @@ export default function AdminUserCreate() {
       password_confirmation: "",
     },
   });
+
+  // Pantau perubahan role
+  const role = watch("role");
+
+  useEffect(() => {
+    setRoleValue(role);
+    if (role === "admin") {
+      setValue("status", "active");
+    }
+  }, [role, setValue]);
 
   const onSubmit = async (data) => {
     setError("");
@@ -201,6 +214,7 @@ export default function AdminUserCreate() {
               color="dark"
               as="select"
               required
+              disabled={roleValue === "admin"} // Status disabled jika admin
               {...register("status", { required: "Status wajib dipilih" })}
               error={isSubmitted && errors.status?.message}
               options={[

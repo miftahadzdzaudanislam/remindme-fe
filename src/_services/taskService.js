@@ -1,6 +1,6 @@
 import API from "@/_api";
 
-// ADMIN SERVICE
+// ===================== ADMIN SERVICE =====================
 /**
  * Ambil daftar task admin dengan pagination & search
  */
@@ -16,7 +16,7 @@ export const adminGetTask = async ({
 };
 
 /**
- * Create Task
+ * Admin Create Task
  */
 export const adminCreateTask = async (taskData) => {
   try {
@@ -29,7 +29,7 @@ export const adminCreateTask = async (taskData) => {
 };
 
 /**
- * Detail Task berdasarkan ID
+ * Admin Detail Task berdasarkan ID
  */
 export const adminGetTaskDetail = async (id) => {
   const response = await API.get(`/admin/tasks/${id}`);
@@ -37,7 +37,7 @@ export const adminGetTaskDetail = async (id) => {
 };
 
 /**
- * Update Task berdasarkan ID
+ * Admin Update Task berdasarkan ID
  */
 export const adminUpdateTask = async (id, taskData) => {
   try {
@@ -50,7 +50,7 @@ export const adminUpdateTask = async (id, taskData) => {
 };
 
 /**
- * Delete Task berdasarkan ID
+ * Admin Delete Task berdasarkan ID
  */
 export const adminDeleteTask = async (id) => {
   try {
@@ -61,3 +61,79 @@ export const adminDeleteTask = async (id) => {
     throw error;
   }
 };
+
+// ===================== MAHASISWA SERVICE =====================
+/**
+ * Ambil daftar task mahasaiswa dengan pagination & search
+ */
+export const mahasiswaGetTask = async ({
+  page = 1,
+  limit = 10,
+}) => {
+  const params = { page, limit };
+
+  const response = await API.get("/mahasiswa/tasks", { params });
+  return response.data;
+};
+
+/**
+ * Mahasiswa Create Task
+ */
+export const mahasaiswaCreateTask = async (taskData) => {
+  try {
+    const response = await API.post("/mahasiswa/tasks", taskData);
+    return response.data;
+  } catch (error) {
+    console.log("Error create task:", error);
+    throw error;
+  }
+};
+
+/**
+ * Mahasiswa Detail Task berdasarkan ID
+ */
+export const mahasaiswaGetTaskDetail = async (id) => {
+  const response = await API.get(`/mahasiswa/tasks/${id}`);
+  return response.data;
+};
+
+/**
+ * Mahasiswa Update Task berdasarkan ID
+ */
+export const mahasaiswaUpdateTask = async (id, taskData) => {
+  try {
+    const response = await API.post(`/mahasiswa/tasks/${id}`, taskData);
+    return response.data;
+  } catch (error) {
+    console.log("Error updating task:", error);
+    throw error;
+  }
+};
+
+/**
+ * Mahasiswa Delete Task berdasarkan ID
+ */
+export const mahasaiswaDeleteTask = async (id) => {
+  try {
+    const response = await API.delete(`/mahasiswa/tasks/${id}`);
+    return response.data;
+  } catch (error) {
+    console.log("Error delete task:", error);
+    throw error;
+  }
+};
+
+/**
+ * Mahasiswa Ubah status Task
+ */
+export const mahasiswaChangeTaskStatus = async (id, {is_done}) => {
+    try {
+    const response = await API.patch(`/mahasiswa/tasks/${id}/toggle`, {
+      is_done,
+    });
+    return response.data;
+  } catch (error) {
+    console.log("Error changing status task:", error);
+    throw error;
+  }
+}

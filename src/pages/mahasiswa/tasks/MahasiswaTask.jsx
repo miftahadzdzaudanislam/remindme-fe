@@ -1,52 +1,52 @@
+import { useMahasiswaChangeStatusTask, useMahasiswaDeleteTask, useMahasiswaTask } from "@/_hooks/useTasks";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import { useFilteredData } from "@/_hooks/utils/useFilteredData";
+import { useFilteredTasks } from "@/_hooks/utils/useFilteredData";
 import DeleteModal from "@/components/modal/DeleteModal";
 import Badge from "@/components/ui/Badge";
 import TabFilter from "@/components/ui/TabFilter";
-import { DUMMY_TASKS, DUMMY_COURSES } from "@/utils/dataDummy";
+import ToggleStatus from "@/components/ui/ToggleStatus";
 import { formatDate } from "@/utils/dateFormatter";
 import { CONFIG } from "@/utils/tableConfig";
-import { CheckSquare, Edit, Loader2, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { CheckSquare, Edit, Loader2, Search, Trash2 } from "lucide-react";
+import { useState } from "react";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
-
-const STATUS_TABS = [
-  { id: "semua", label: "Semua" },
-  { id: "pending", label: "Pending" },
-  { id: "done", label: "Done" },
-];
 
 export default function MahasiswaTask() {
   useDocumentTitle("Kelola Tugas");
 
-  const userId = 2;
-  const [tasks, setTasks] = useState(
-    DUMMY_TASKS.filter((task) => task.user_id === userId)
-  );
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const tasksWithMeta = useMemo(
-    () =>
-      tasks.map((task) => ({
-        ...task,
-        course: DUMMY_COURSES.find((c) => c.id === task.course_id),
-      })),
-    [tasks]
-  );
+  // Ambil data dari API
+  const {
+    tasks: apiTasks,
+    pagination,
+    isLoading,
+    isError,
+  } = useMahasiswaTask({ page, limit });
 
-  const { filteredData, activeTab, setActiveTab } = useFilteredData(
-    tasksWithMeta,
-    (data, tab) => {
-      if (tab === "done") return data.filter((task) => task.is_done);
-      if (tab === "pending") return data.filter((task) => !task.is_done);
-      return data;
-    }
-  );
+  // Hook untuk filter
+  const { filteredTasks, activeTab, setActiveTab, search, setSearch } =
+    useFilteredTasks(apiTasks);
+  // Delete task Mutation
+  const deleteTaskMutation = useMahasiswaDeleteTask();
+  // Change task status Mutation
+  const changeStatusMutation = useMahasiswaChangeStatusTask();
 
-  const handleDeleteTask = () => {
-    setTasks((prev) => prev.filter((t) => t.id !== selectedTask.id));
+  const handleToggleStatus = (task) => {
+    changeStatusMutation.mutate({ id: task.id, is_done: !task.is_done });
+  };
+
+  const openDeleteModal = (task) => {
+    setSelectedTask(task);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteTask = async () => {
+    await deleteTaskMutation.mutateAsync(selectedTask.id);
     setDeleteModalOpen(false);
     setSelectedTask(null);
   };
@@ -92,18 +92,17 @@ export default function MahasiswaTask() {
     {
       name: "Status",
       selector: (row) => row.is_done,
-      cell: (row) => {
-        const statusLabel = row.is_done ? "Done" : "Pending";
-        const dotColor = row.is_done ? "bg-success" : "bg-warning";
-        return (
-          <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full ${dotColor}`}></span>
-            <span>{statusLabel}</span>
-          </div>
-        );
-      },
+      cell: (row) => (
+        <div className="flex items-center gap-2 w-full justify-center">
+          <ToggleStatus
+            is_done={row.is_done}
+            onToggle={() => handleToggleStatus(row)}
+            loading={changeStatusMutation.isLoading}
+          />
+        </div>
+      ),
       sortable: true,
-      width: "110px",
+      width: "90px",
     },
     {
       name: "Aksi",
@@ -117,10 +116,7 @@ export default function MahasiswaTask() {
             <Edit size={18} />
           </Link>
           <button
-            onClick={() => {
-              setSelectedTask(row);
-              setDeleteModalOpen(true);
-            }}
+            onClick={() => openDeleteModal(row)}
             className="text-danger hover:text-danger-hover cursor-pointer"
             title="Hapus Tugas"
           >
@@ -136,6 +132,7 @@ export default function MahasiswaTask() {
   return (
     <>
       <div className="min-h-screen space-y-4 rounded-xl p-3 md:p-6">
+        {/* Header */}
         <div className="flex flex-col justify-between mb-10 items-start gap-4 md:items-center md:flex-row">
           <h1 className="flex text-xl md:text-2xl font-bold text-primary gap-2 md:gap-3 items-center">
             <CheckSquare size={24} className="md:w-7 md:h-7" />
@@ -149,17 +146,55 @@ export default function MahasiswaTask() {
           </Link>
         </div>
 
-        <TabFilter tabs={STATUS_TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Search Input */}
+        <div className="mb-4">
+          <div className="relative bg-white/50">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+            <input
+              type="text"
+              placeholder="Cari judul tugas atau prioritas..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
 
+        {/* Tabs */}
+        <TabFilter
+          tabs={CONFIG.status_tabs}
+          activeTab={activeTab}
+          onTabChange={(tabId) => {
+            setActiveTab(tabId);
+            setPage(1);
+          }}
+        />
+
+        {/* Table */}
         <div className="max-w-100 overflow-x-auto md:min-w-full rounded-lg border border-gray-200">
           <DataTable
             columns={columns}
-            data={filteredData}
+            data={filteredTasks}
             pagination
-            paginationPerPage={10}
+            paginationPerPage={limit}
             paginationRowsPerPageOptions={[10, 25, 50]}
+            paginationTotalRows={pagination?.total || filteredTasks.length}
+            onChangePage={(p) => setPage(p)}
+            onChangeRowsPerPage={(newLimit) => {
+              setLimit(newLimit);
+              setPage(1);
+            }}
+            progressPending={isLoading}
             noDataComponent={
-              <div className="py-8 text-gray-500">Tidak ada data tugas</div>
+              <div className="py-8 text-gray-500">
+                {isError ? "Gagal memuat data" : "Tidak ada data tugas"}
+              </div>
             }
             progressComponent={
               <div className="flex justify-center py-10">

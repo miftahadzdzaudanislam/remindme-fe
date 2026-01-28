@@ -26,6 +26,7 @@ const UserInput = forwardRef(
     const leftPad = Icon ? "pl-11" : "pl-3";
     const rightPad = isPassword ? "pr-10" : "pr-3";
     const labelColor = color === "dark" ? "text-dark" : "text-white";
+    const errorColor = color === "dark" ? "text-danger" : "text-red-300";
 
     const inputColor =
       color === "dark"
@@ -111,7 +112,7 @@ const UserInput = forwardRef(
         </div>
 
         {/* Error Message */}
-        {error && <p className="mt-1 text-sm text-danger">{error}</p>}
+        {error && <p className={`mt-1 text-sm ${errorColor}`}>{error}</p>}
       </div>
     );
   },
