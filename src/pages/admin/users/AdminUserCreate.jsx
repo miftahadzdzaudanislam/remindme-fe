@@ -14,7 +14,7 @@ import {
 import { motion } from "framer-motion";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import UserInput from "@/components/ui/UserInput";
-import { useForm } from "react-hook-form"; // Tambahkan import ini
+import { useForm } from "react-hook-form";
 
 export default function AdminUserCreate() {
   useDocumentTitle("Tambah Mahasiswa");

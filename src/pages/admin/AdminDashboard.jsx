@@ -4,7 +4,7 @@ import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import StatCard from "@/components/ui/StatCard";
 import Badge from "@/components/ui/Badge";
 import { formatTimeAgo } from "@/utils/dateFormatter";
-import { useAdminDashboard } from "@/_hooks/useUsers";
+import { useAdminDashboard } from "@/_hooks/useDashboard";
 
 export default function AdminDashboard() {
   useDocumentTitle("Dashboard Admin");
@@ -12,14 +12,14 @@ export default function AdminDashboard() {
   const { data, isLoading, error } = useAdminDashboard();
 
   // Default value jika data belum ada
-  const summary = data?.summary || {};
-  const recentLogins = data?.recent_logins || [];
+  const summary = data || {};
+  const recentLogins = data?.last_login_users || [];
 
   const STATS = [
     {
       icon: Users,
       title: "Total Mahasiswa",
-      value: summary.total_students ?? 0,
+      value: summary.total_mahasiswa ?? 0,
       color: "border-indigo-300 bg-indigo-100 text-indigo-900",
     },
     {

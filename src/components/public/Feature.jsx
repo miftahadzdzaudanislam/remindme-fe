@@ -1,7 +1,9 @@
-import { Bell, CalendarDays, ClipboardList } from "lucide-react";
+import { Bell, CalendarDays, ClipboardList, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { usePublicDashboard } from "@/_hooks/useDashboard";
 
 export default function Feature() {
+  const { data, isLoading } = usePublicDashboard();
   const feature = [
     {
       icon: ClipboardList,
@@ -15,16 +17,16 @@ export default function Feature() {
     },
     {
       icon: Bell,
-      title: "Pengingat Via Email",
-      desc: "Notifikasi langsung ke Email sebelum H-3 deadline & hari H deadline",
+      title: "Pengingat Via Telegram",
+      desc: "Notifikasi langsung ke Telegram sebelum H-3 deadline & hari H deadline",
     },
   ];
 
   const statistic = [
-    { data: "Mahasiswa Aktif", count: 20 },
-    { data: "Jadwal Kuliah Tercatat", count: 20 },
-    { data: "Tugas Tercatat", count: 20 },
-    { data: "Tugas Terselesaikan", count: 20 },
+    { data: "Mahasiswa Aktif", count: data?.total_mahasiswa ?? 0 },
+    { data: "Jadwal Kuliah Tercatat", count: data?.total_courses ?? 0 },
+    { data: "Tugas Tercatat", count: data?.total_tasks ?? 0 },
+    { data: "Tugas Terselesaikan", count: data?.total_tasks_done ?? 0 },
   ];
 
   const containerVariants = {
@@ -91,7 +93,7 @@ export default function Feature() {
             ))}
           </motion.div>
         </div>
-        
+
         {/* Statistic */}
         <motion.div
           className="bg-primary text-white rounded-r-verybig py-16 mt-20 me-15 md:py-30"
@@ -114,7 +116,13 @@ export default function Feature() {
                   variants={itemVariants}
                   whileHover={{ scale: 1.1 }}
                 >
-                  <h2 className="text-4xl font-bold">{s.count}</h2>
+                  <h2 className="text-4xl font-bold">
+                    {isLoading ? (
+                      <Loader2 className="animate-spin h-6 w-6 text-primary" />
+                    ) : (
+                      s.count
+                    )}
+                  </h2>
                   <h4 className="mt-2 md:text-base font-medium text-white">
                     {s.data}
                   </h4>

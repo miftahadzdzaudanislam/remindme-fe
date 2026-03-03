@@ -1,14 +1,28 @@
+import { useAuth, useCurrentUser } from "@/_hooks/useAuth";
+import { Loader2 } from "lucide-react";
 import { Navigate, Outlet } from "react-router-dom";
-import { isAuthenticated, getUserData } from "@/_hooks/useAuth";
 
 export default function RoleRoute({ allowedRoles = [] }) {
-  if (!isAuthenticated()) {
+  const { isAuthenticated, loading } = useAuth();
+  const { data: user, isLoading: userLoading } = useCurrentUser();
+
+  if (loading || userLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="animate-spin h-6 w-6 text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  const role = getUserData()?.role;
-  if (!role || !allowedRoles.includes(role)) {
-    return <Navigate to="/unauthorized" replace />;
+  const userRole = user?.role;
+
+  if (!allowedRoles.includes(userRole)) {
+    const redirectPath = userRole === "admin" ? "/admin" : "/mahasiswa";
+    return <Navigate to={redirectPath} replace />;
   }
 
   return <Outlet />;

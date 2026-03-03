@@ -68,7 +68,7 @@ export const adminGetDashboard = async (params = {}) => {
 /**
  * Mengambil data analytics untuk mahasiswa dashboard.
  */
-export const MahasiswaGetDashboard = async (params = {}) => {
+export const mahasiswaGetDashboard = async (params = {}) => {
   const response = await API.get("/mahasiswa/dashboard", params);
   return response.data.data || response.data;
 };

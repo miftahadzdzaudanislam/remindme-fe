@@ -12,22 +12,18 @@ import {
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { getUserData, useLogout } from "@/_hooks/useAuth";
+import { useLogout } from "@/_hooks/useAuth";
 
-export default function Sidebar({ onToggle }) {
+export default function Sidebar({ onToggle, user }) {
   const logoutMutation = useLogout();
   const [open, setOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const { pathname } = useLocation();
-  const user = getUserData();
   const role = user?.role;
 
-  const displayEmail =
-    user?.email?.charAt(0).toUpperCase() + user?.email?.slice(1) ||
-    "admin@remindme.com";
-  const displayName =
-    user?.name?.charAt(0).toUpperCase() + user?.name?.slice(1) || "Admin";
+  const displayEmail = user?.email || "user@remindme.com";
+  const displayName = user?.name || "User";
 
   const adminMenus = [
     { label: "Dashboard", icon: Home, to: "/admin" },
@@ -137,7 +133,9 @@ export default function Sidebar({ onToggle }) {
             <li>
               <Link
                 to="/"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition text-gray-700 hover:bg-gray-100 ${open ? "" : "justify-center"}`}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition text-gray-700 hover:bg-gray-100 ${
+                  open ? "" : "justify-center"
+                }`}
               >
                 <ArrowLeftCircle size={18} />
                 {open && "Kembali ke Home"}
@@ -159,7 +157,9 @@ export default function Sidebar({ onToggle }) {
             {open && (
               <div className="text-left text-sm">
                 <p className="font-medium">{displayName}</p>
-                <p className="text-xs text-gray-500">{displayEmail}</p>
+                <p className="text-xs text-gray-500 truncate max-w-40">
+                  {displayEmail}
+                </p>
               </div>
             )}
           </button>
@@ -175,6 +175,7 @@ export default function Sidebar({ onToggle }) {
               >
                 <Link
                   to="profile"
+                  onClick={() => setProfileOpen(false)}
                   className="flex items-center gap-2 px-4 py-3 rounded-t-xl hover:bg-gray-100"
                 >
                   <User size={16} /> Profile
@@ -182,7 +183,7 @@ export default function Sidebar({ onToggle }) {
                 <button
                   onClick={handleLogout}
                   disabled={logoutMutation.isPending}
-                  className="flex w-full items-center gap-2 px-4 py-3 rounded-b-xl text-red-600 hover:bg-red-50"
+                  className="flex w-full items-center gap-2 px-4 py-3 rounded-b-xl text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <LogOut size={16} />
                   {logoutMutation.isPending ? "Logging out..." : "Logout"}

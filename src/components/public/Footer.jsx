@@ -19,7 +19,7 @@ export default function MainFooter() {
           </span>
         </div>
 
-        <Badge value={"RemindMe v2.0"} size="sm" className="md:basis-auto" />
+        <Badge value={"RemindMe v2.1"} size="sm" className="md:basis-auto" />
       </div>
     </footer>
   );

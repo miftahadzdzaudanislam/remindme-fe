@@ -1,4 +1,4 @@
-import GuestRoute from "@/components/auth/GuestRole";
+import GuestRoute from "@/components/auth/GuestRoute";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import RoleRoute from "@/components/auth/RoleRoute";
 import NotFound from "@/components/NotFoundPage";

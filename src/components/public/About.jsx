@@ -10,9 +10,9 @@ export default function About() {
         "Kami memahami betapa padatnya jadwal kuliah dan tugas. Dengan RemindMe, kamu bisa lebih fokus belajar tanpa khawatir lupa deadline.",
     },
     {
-      title: "Notifikasi Real-Time via Email",
+      title: "Notifikasi Real-Time via Telegram",
       content:
-        "Langsung dapat pengingat ke Email sesuai jadwal yang kamu tentukan sendiri—mulai dari H-3 hingga beberapa jam sebelum tenggat.",
+        "Langsung dapat pengingat ke Telegram sesuai jadwal yang kamu tentukan sendiri—mulai dari H-3 hingga beberapa jam sebelum tenggat.",
     },
     {
       title: "Desain Simpel, Fitur Lengkap",
@@ -86,7 +86,7 @@ export default function About() {
           <p className="mt-4 text-gray-600">
             Kami hadir untuk membantu mahasiswa mengelola tugas dan jadwal
             kuliah dengan lebih mudah. Dengan pengingat otomatis dan integrasi
-            Email, kamu nggak perlu takut lagi lupa deadline.
+            Telegram, kamu nggak perlu takut lagi lupa deadline.
           </p>
         </motion.div>
       </div>

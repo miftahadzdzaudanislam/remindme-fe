@@ -1,8 +1,42 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import * as authService from "@/_services/authService";
+import { useEffect, useState } from "react";
+import { supabase } from "@/utils/supabaseClient";
 
 // ===================== AUTHENTICATION =====================
+/**
+ * Auth Global
+ */
+export const useAuth = () => {
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Ambil session awal
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setLoading(false);
+    });
+
+    // Listen perubahan auth
+    const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  return {
+    session,
+    user: session?.user,
+    isAuthenticated: !!session,
+    loading,
+  };
+};
+
 /**
  * Login Mutation
  */
@@ -10,33 +44,27 @@ export const useLogin = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: async (credentials) => {
-      return await authService.login(credentials);
-    },
-    onSuccess: (data) => {
-      // Simpan token dan user data
-      localStorage.setItem("authToken", data.token);
-      if (data.user) {
-        localStorage.setItem("userData", JSON.stringify(data.user));
-      }
+    mutationFn: authService.loginWithEmail,
+    onSuccess: async (data) => {
+      const user = data.user;
 
-      // Redirect berdasarkan role
-      const userRole = data.user?.role || data.role;
+      // ambil role dari tabel users
+      const { data: profile } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
 
-      if (userRole === "admin") {
+      const role = profile?.role;
+
+      if (role === "admin") {
         navigate("/admin");
-      } else if (userRole === "mahasiswa") {
-        navigate("/mahasiswa");
       } else {
-        navigate("/");
+        navigate("/mahasiswa");
       }
     },
     onError: (error) => {
-      // Error akan ditampilkan di component via mutation state
-      console.error("Login error:", {
-        success: error.response?.data?.success || error.success,
-        message: error.response?.data?.message || error.message,
-      });
+      console.error("Login error:", error.message);
     },
   });
 };
@@ -48,24 +76,12 @@ export const useRegister = () => {
   const navigate = useNavigate();
 
   return useMutation({
-    mutationFn: async (userData) => {
-      return await authService.register(userData);
-    },
-    onSuccess: (data) => {
-      // Simpan token dan user data
-      localStorage.setItem("authToken", data.token);
-      if (data.user) {
-        localStorage.setItem("userData", JSON.stringify(data.user));
-      }
-
+    mutationFn: authService.registerWithEmail,
+    onSuccess: () => {
       navigate("/mahasiswa");
     },
     onError: (error) => {
-      // Error akan ditampilkan di component via mutation state
-      console.error("Registration error:", {
-        success: error.response?.data?.success || error.success,
-        message: error.response?.data?.message || error.message,
-      });
+      console.error("Register error:", error.message);
     },
   });
 };
@@ -78,45 +94,55 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const token = localStorage.getItem("authToken");
-      return await authService.logout({ token });
+      const { error } = await supabase.auth.signOut();
+      if (error) throw new Error(error.message);
     },
     onSuccess: () => {
-      // Hapus token dan user data
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userData");
-
       navigate("/login");
-    },
-    onError: (error) => {
-      // Error akan ditampilkan di component via mutation state
-      console.error("Logout error:", {
-        success: error.response?.data?.success || error.success,
-        message: error.response?.data?.message || error.message,
-      });
     },
   });
 };
 
-// Cek Auth
-export const isAuthenticated = () => {
-  const token = localStorage.getItem("authToken");
-  return !!token;
+/**
+ * Login With Google
+ */
+export const useGoogleLogin = () => {
+  const login = async () => {
+    try {
+      await authService.signInWithGoogle();
+    } catch (error) {
+      console.log("Google login error:", error.message);
+    }
+  };
+
+  return { login };
 };
 
-// Get Token
-export const getToken = () => {
-  return localStorage.getItem("authToken");
+/**
+ * Get Current User Profile (dengan role dari database)
+ */
+export const useCurrentUser = () => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["currentUser", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+
+      const { data } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      return data;
+    },
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5, // 5 menit
+  });
 };
 
-// Get User data
-export const getUserData = () => {
-  const userData = localStorage.getItem("userData");
-  return userData ? JSON.parse(userData) : null;
-};
-
-// Get user role
 export const useUserRole = () => {
-  const userData = getUserData();
-  return userData?.role || null;
+  const { data: user } = useCurrentUser();
+  return user?.role || null;
 };

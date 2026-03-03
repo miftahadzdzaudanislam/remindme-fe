@@ -2,23 +2,22 @@ import Sidebar from "@/components/ui/Sidebar";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Heart } from "lucide-react";
-import { getUserData } from "@/_hooks/useAuth";
+import { useCurrentUser } from "@/_hooks/useAuth";
 
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const currentYear = new Date().getFullYear();
-  const user = getUserData();
+  const { data: user } = useCurrentUser();
 
   const displayRole =
-    user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || "Admin";
-  const displayName =
-    user?.name?.charAt(0).toUpperCase() + user?.name?.slice(1) || "Admin";
+    user?.role?.charAt(0).toUpperCase() + user?.role?.slice(1) || "User";
+  const displayName = user?.name || "User";
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
       {/* Sidebar */}
       <div className="flex flex-1">
-        <Sidebar onToggle={setIsSidebarOpen} />
+        <Sidebar onToggle={setIsSidebarOpen} user={user} />
 
         {/* Main Content */}
         <div
@@ -58,7 +57,7 @@ export default function DashboardLayout() {
                 <span className="hidden sm:inline text-gray-300">|</span>
                 <span>{currentYear} RemindMe Panel</span>
                 <span className="bg-primary text-white text-xs font-semibold px-2 py-0.5 rounded">
-                  v2.0
+                  v2.1
                 </span>
               </div>
             </div>

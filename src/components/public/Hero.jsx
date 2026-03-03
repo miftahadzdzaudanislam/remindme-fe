@@ -6,19 +6,19 @@ export default function Hero() {
     {
       tag: "FITUR UNGGUlAN",
       title: "Reminder Tugas & Jadwal Kuliah Mahasiswa",
-      desc: "Kelola waktu kuliahmu dengan lebih mudah! Dengan aplikasi ini, kamu bisa mencatat tugas, menyusun jadwal kuliah, dan mendapatkan notifikasi deadline langsung ke WhatsApp.",
+      desc: "Kelola waktu kuliahmu dengan lebih mudah! Dengan aplikasi ini, kamu bisa mencatat tugas, menyusun jadwal kuliah, dan mendapatkan notifikasi deadline langsung ke Telegram.",
       image: "/carousel/banner-item-01.jpg",
     },
     {
       tag: "RINGAN & AKRAB",
       title: "Kuliah Tenang, Tugas Aman",
-      desc: "Capek lupa deadline atau keteteran jadwal? Aplikasi ini bantu kamu mencatat jadwal kuliah, bikin reminder tugas, dan ngirim notifikasi otomatis ke WhatsApp. Gampang banget, tinggal atur - kami yang ingetin!",
+      desc: "Capek lupa deadline atau keteteran jadwal? Aplikasi ini bantu kamu mencatat jadwal kuliah, bikin reminder tugas, dan ngirim notifikasi otomatis ke Telegram. Gampang banget, tinggal atur - kami yang ingetin!",
       image: "/carousel/banner-item-02.jpg",
     },
     {
       tag: "PROMOSI & MENARIK",
       title: "Jadi Mahasiswa Super Produktif!",
-      desc: "Gunakan aplikasi Reminder Tugas untuk mencatat semua deadline, jadwal kuliah, dan dapatkan pengingat otomatis lewat WhatsApp. Belajar lebih fokus, tanpa takut lupa tugas lagi.",
+      desc: "Gunakan aplikasi Reminder Tugas untuk mencatat semua deadline, jadwal kuliah, dan dapatkan pengingat otomatis lewat Telegram. Belajar lebih fokus, tanpa takut lupa tugas lagi.",
       image: "/carousel/banner-item-03.jpg",
     },
   ];

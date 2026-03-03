@@ -4,7 +4,7 @@ import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import StatCard from "@/components/ui/StatCard";
 import KalenderMini from "@/components/ui/MiniCalendar";
 import { formatDate, formatHours } from "@/utils/dateFormatter";
-import { useMahasiswaDashboard } from "@/_hooks/useUsers";
+import { useMahasiswaDashboard } from "@/_hooks/useDashboard";
 
 export default function MahasiswaDashboard() {
   useDocumentTitle("Dashboard Mahasiswa");
@@ -12,9 +12,9 @@ export default function MahasiswaDashboard() {
   const { data, isLoading, error } = useMahasiswaDashboard();
 
   // Ambil data dari response API
-  const summary = data?.task_summary || {};
-  const upcomingTasks = data?.nearest_tasks || [];
-  const todaySchedule = data?.today_courses || [];
+  const summary = data?.task_progress ?? { total: 0, done: 0, progress: 0 };
+  const upcomingTasks = data?.upcoming_tasks ?? [];
+  const todaySchedule = data?.today_courses ?? [];
 
   return (
     <motion.div

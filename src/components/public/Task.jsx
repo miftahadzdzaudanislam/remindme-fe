@@ -1,11 +1,11 @@
 import { useMahasiswaTask } from "@/_hooks/useTasks";
-import { getUserData } from "@/_hooks/useAuth";
+import { useCurrentUser } from "@/_hooks/useAuth";
 import { motion } from "framer-motion";
 import Badge from "@/components/ui/Badge";
 import { formatDate } from "@/utils/dateFormatter";
 
 export default function Task() {
-  const user = getUserData();
+  const { data: user, isLoading: isUserLoading } = useCurrentUser();
 
   const {
     tasks = [],
@@ -13,9 +13,11 @@ export default function Task() {
     isError,
   } = useMahasiswaTask({ page: 1, limit: 3 });
 
-  if (user?.role !== "mahasiswa") return null;
+  // Tunggu user profile selesai diambil dulu
+  if (isUserLoading) return null;
 
-  console.log({ tasks, isLoading, isError });
+  // Hanya tampil untuk mahasiswa
+  if (user?.role !== "mahasiswa") return null;
 
   return (
     <section id="task" className="pt-24 bg-white">

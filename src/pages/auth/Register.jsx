@@ -14,12 +14,14 @@ import {
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
 import UserInput from "@/components/ui/UserInput";
 import { useForm } from "react-hook-form";
-import { useRegister } from "@/_hooks/useAuth";
+import { useGoogleLogin, useRegister } from "@/_hooks/useAuth";
 import { useEffect } from "react";
+import { FcGoogle } from "react-icons/fc";
 
 export default function Register() {
   useDocumentTitle("Register");
   const navigate = useNavigate();
+  const { login } = useGoogleLogin();
 
   const {
     register,
@@ -53,8 +55,10 @@ export default function Register() {
     }
   }, [isError, resetField]);
 
-  const onSubmit = (data) => {
-    registerMutation.mutate(data);
+  const onSubmit = ({ ...rest }) => {
+    registerMutation.mutate({
+      ...rest,
+    });
   };
 
   return (
@@ -90,10 +94,10 @@ export default function Register() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 w-full max-w-2xl bg-light/30 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8 space-y-6"
+          className="relative z-10 w-full max-w-2xl bg-light/30 backdrop-blur-xl border border-white/30 rounded-2xl shadow-2xl p-8"
         >
           {/* Header */}
-          <div className="text-center">
+          <div className="text-center pb-6">
             <div className="mx-auto mb-4 h-14 w-14 flex items-center justify-center rounded-full bg-white text-primary shadow-lg">
               <UserPlus size={28} />
             </div>
@@ -106,7 +110,7 @@ export default function Register() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-start gap-3 bg-red-500/20 border border-red-400/50 rounded-lg p-4"
+              className="flex items-start gap-3 bg-red-500/20 border border-red-400/50 rounded-lg p-4 pb-6"
             >
               <AlertCircle size={20} className="text-red-300 mt-0.5 shrink-0" />
               <div className="flex-1">
@@ -246,7 +250,34 @@ export default function Register() {
             </motion.button>
           </form>
 
-          <p className="text-center text-sm text-white/90">
+          <div className="flex items-center py-4">
+            <div className="flex-1 h-0.5 bg-gray-300"></div>
+            <div className="flex gap-2 px-4 text-sm text-gray-300">
+              Atau Lanjutkan dengan
+            </div>
+            <div className="flex-1 h-0.5 bg-gray-300"></div>
+          </div>
+
+          <motion.button
+            whileTap={{ scale: !isPending ? 0.98 : 1 }}
+            onClick={login}
+            disabled={isPending}
+            className="w-full bg-gray-50 text-black py-3 rounded-lg hover:bg-gray-200 border border-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPending ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Loading...
+              </div>
+            ) : (
+              <div className="flex justify-center items-center gap-3">
+                <FcGoogle size={25} />
+                <span>Masuk Dengan Google</span>
+              </div>
+            )}
+          </motion.button>
+
+          <p className="text-center text-sm text-white/90 pt-6">
             Sudah punya akun?{" "}
             <Link to="/login" className="font-bold text-white hover:underline">
               Log in
