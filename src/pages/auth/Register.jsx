@@ -116,7 +116,6 @@ export default function Register() {
               <div className="flex-1">
                 <p className="text-red-200 text-sm font-medium">
                   {error?.response?.data?.message ||
-                    error?.message ||
                     "Registrasi gagal. Silakan coba lagi."}
                 </p>
               </div>
@@ -124,7 +123,7 @@ export default function Register() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 pt-6">
             <UserInput
               label="Nama Lengkap"
               icon={User}

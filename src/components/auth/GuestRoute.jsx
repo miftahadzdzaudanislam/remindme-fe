@@ -1,22 +1,28 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth, useCurrentUser } from "@/_hooks/useAuth";
+import { useAuth, useUserRole } from "@/_hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
 export default function GuestRoute() {
   const { isAuthenticated, loading } = useAuth();
-  const { data: user, isLoading: userLoading } = useCurrentUser();
+  const { role, roleLoading } = useUserRole();
 
-  if (loading || userLoading) {
+  if (loading || roleLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin h-6 w-6 text-primary" />
+      <div className="p-4">
+        <Loader2 size={60} className="animate-spin text-primary" />
       </div>
     );
   }
 
   if (isAuthenticated) {
-    const redirectPath = user?.role === "admin" ? "/admin" : "/mahasiswa";
-    return <Navigate to={redirectPath} replace />;
+    if (role === "admin") return <Navigate to="/admin" replace />;
+    if (role === "mahasiswa") return <Navigate to="/mahasiswa" replace />;
+    return (
+      <div className="p-4">
+        <Loader2 size={60} className="animate-spin text-primary" />
+      </div>
+    );
   }
+
   return <Outlet />;
 }

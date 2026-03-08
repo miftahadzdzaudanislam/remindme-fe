@@ -1,17 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Users, Edit, Trash2, Loader2, Search } from "lucide-react";
+import { Users, Edit, Loader2, Search } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import useDocumentTitle from "@/_hooks/utils/useDocumentTitle";
-import {
-  useAdminChangeStatusUser,
-  useAdminDeleteUser,
-  useAdminUser,
-} from "@/_hooks/useUsers";
+import { useAdminChangeStatusUser, useAdminUser } from "@/_hooks/useUsers";
 import TabFilter from "@/components/ui/TabFilter";
 import DataTable from "react-data-table-component";
 import { CONFIG } from "@/utils/tableConfig";
-import DeleteUserModal from "@/components/modal/DeleteUserModal";
 import ChangeStatusModal from "@/components/modal/ChangeStatusModal";
 import { useFilteredUsers } from "@/_hooks/utils/useFilteredData";
 
@@ -22,43 +16,36 @@ export default function AdminUser() {
   const [limit, setLimit] = useState(10);
   const [selectedUser, setSelectedUser] = useState(null);
   const [statusModalOpen, setStatusModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   // ambil data dari API
-  const {
-    users: apiUsers,
-    pagination,
-    isLoading,
-    isError,
-  } = useAdminUser({ page, limit });
+  const { users, pagination, isLoading, isError } = useAdminUser({
+    page,
+    limit,
+  });
 
   // gunakan hook untuk filter
   const { filteredUsers, activeTab, setActiveTab, search, setSearch } =
-    useFilteredUsers(apiUsers);
+    useFilteredUsers(users);
 
   // mutation untuk change status
   const changeStatusMutation = useAdminChangeStatusUser();
 
-  // mutation untuk delete user
-  const deleteUserMutation = useAdminDeleteUser();
-
   const closeModals = () => {
     setStatusModalOpen(false);
-    setDeleteModalOpen(false);
     setSelectedUser(null);
   };
 
   const handleChangeStatus = async ({ status }) => {
-    await changeStatusMutation.mutateAsync({
-      userId: selectedUser.id,
-      status,
-    });
-    closeModals();
-  };
-
-  const handleDeleteUser = async () => {
-    await deleteUserMutation.mutateAsync(selectedUser.id);
-    closeModals();
+    if (!selectedUser?.id) return;
+    try {
+      await changeStatusMutation.mutateAsync({
+        userId: selectedUser.id,
+        status,
+      });
+      closeModals();
+    } catch (err) {
+      console.error("Gagal ubah status:", err?.message);
+    }
   };
 
   const columns = [
@@ -130,16 +117,6 @@ export default function AdminUser() {
           >
             <Edit size={18} />
           </button>
-          <button
-            onClick={() => {
-              setSelectedUser(row);
-              setDeleteModalOpen(true);
-            }}
-            className="text-danger hover:text-danger-hover cursor-pointer"
-            title="Hapus User"
-          >
-            <Trash2 size={18} />
-          </button>
         </div>
       ),
       width: "90px",
@@ -155,12 +132,6 @@ export default function AdminUser() {
           <Users size={24} className="md:w-7 md:h-7" />
           <span>Daftar Mahasiswa</span>
         </h1>
-        <Link
-          to="create"
-          className="inline-flex items-center justify-center px-3 py-2 rounded-lg transition font-medium text-xs text-white bg-primary drop-shadow-xl md:drop-shadow-2xl shadow-primary hover:scale-105 hover:bg-primary-hover md:text-sm w-full md:w-auto md:px-4"
-        >
-          Tambah Mahasiswa +
-        </Link>
       </div>
 
       {/* Search Input */}
@@ -199,9 +170,10 @@ export default function AdminUser() {
           columns={columns}
           data={filteredUsers}
           pagination
+          paginationServer
           paginationPerPage={limit}
           paginationRowsPerPageOptions={[10, 25, 50]}
-          paginationTotalRows={pagination?.total || filteredUsers.length}
+          paginationTotalRows={pagination?.total || 0}
           onChangePage={(p) => setPage(p)}
           onChangeRowsPerPage={(newLimit) => {
             setLimit(newLimit);
@@ -231,13 +203,6 @@ export default function AdminUser() {
         currentStatus={selectedUser?.status}
         onClose={closeModals}
         onConfirm={handleChangeStatus}
-      />
-
-      <DeleteUserModal
-        open={deleteModalOpen}
-        userName={selectedUser?.name}
-        onClose={closeModals}
-        onConfirm={handleDeleteUser}
       />
     </div>
   );

@@ -76,7 +76,7 @@ export default function MahasiswaDashboard() {
                   <div key={task.id} className="bg-yellow-50 p-2 rounded-lg">
                     <p className="font-semibold text-sm">{task.nama_tugas}</p>
                     <p className="text-xs opacity-75">
-                      {task.nama_matkul} Deadline: {formatDate(task.deadline)}
+                      {task.nama_matkul}, Deadline: {formatDate(task.deadline)}
                     </p>
                   </div>
                 ))

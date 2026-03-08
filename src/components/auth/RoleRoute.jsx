@@ -1,28 +1,39 @@
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth, useCurrentUser } from "@/_hooks/useAuth";
 import { Loader2 } from "lucide-react";
-import { Navigate, Outlet } from "react-router-dom";
 
 export default function RoleRoute({ allowedRoles = [] }) {
   const { isAuthenticated, loading } = useAuth();
-  const { data: user, isLoading: userLoading } = useCurrentUser();
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useCurrentUser();
+  const location = useLocation();
 
-  if (loading || userLoading) {
+  // jangan pakai isFetching untuk blocking UI
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin h-6 w-6 text-primary" />
+        <Loader2 size={60} className="animate-spin text-primary" />
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  const userRole = user?.role;
+  if (profileError) {
+    console.error("RoleRoute profile error:", profileError);
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
-  if (!allowedRoles.includes(userRole)) {
-    const redirectPath = userRole === "admin" ? "/admin" : "/mahasiswa";
-    return <Navigate to={redirectPath} replace />;
+  const role = (profile?.role || "").toLowerCase().trim();
+  const normalizedAllowed = allowedRoles.map((r) => r.toLowerCase().trim());
+
+  if (!role || !normalizedAllowed.includes(role)) {
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return <Outlet />;

@@ -1,74 +1,63 @@
 import API from "@/_api";
+import { supabase } from "@/utils/supabaseClient";
+
+// ===================== PROFILE SERVICES =====================
+/**
+ * Get User Profile
+ */
+export const getUserProfile = async (userId) => {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message || "Failed to get user profile");
+  return data;
+};
+
+/**
+ * Update User Profile
+ */
+export const changeProfile = async () => {
+  // coming soon
+};
 
 // ===================== ADMIN SERVICES =====================
 /**
  * Ambil daftar user admin dengan pagination & search
  */
-export const adminGetUser = async ({
-  page = 1,
-  limit = 10,
-  // search = "",
-}) => {
-  const params = { page, limit };
+export const adminGetUser = async ({ page = 1, limit = 10 }) => {
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
-  const response = await API.get("/admin/users", { params });
-  return response.data;
-};
+  let query = supabase
+    .from("users")
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
-/**
- * Create User Mahasiswa
- */
-export const adminCreateUser = async (userData) => {
-  try {
-    const response = await API.post("/admin/users", userData);
-    return response.data;
-  } catch (error) {
-    console.log("Error create user:", error);
-    throw error;
-  }
-};
+  const { data, error, count } = await query;
+  if (error) throw new Error(error.message);
 
-/**
- * Delete User berdasarkan ID
- */
-export const adminDeleteUser = async (userId) => {
-  try {
-    const response = await API.delete(`/admin/users/${userId}`);
-    return response.data;
-  } catch (error) {
-    console.log("Error delete user:", error);
-    throw error;
-  }
+  return {
+    data: data ?? [],
+    total: count ?? 0,
+    page,
+    limit,
+  };
 };
 
 /**
  * Admin Ubah status user
  */
-export const adminChangeUserStatus = async (userId, { status }) => {
-  try {
-    const response = await API.post(`/admin/users/${userId}/status`, {
-      status,
-    });
-    return response.data;
-  } catch (error) {
-    console.log("Error changing status user:", error);
-    throw error;
-  }
-};
+export const adminChangeUserStatus = async (userId, status) => {
+  const { data, error } = await supabase
+    .from("users")
+    .update({ status })
+    .eq("id", userId);
 
-/**
- * Mengambil data analytics untuk admin dashboard.
- */
-export const adminGetDashboard = async (params = {}) => {
-  const response = await API.get("/admin/dashboard", params);
-  return response.data.data || response.data;
-};
+  if (error) throw new Error(error.message);
 
-// ===================== MAHASISWA SERVICES =====================
-/**
- * Mengambil data analytics untuk mahasiswa dashboard.
- */
-export const mahasiswaGetDashboard = async (params = {}) => {
-  const response = await API.get("/mahasiswa/dashboard", params);
-  return response.data.data || response.data;
+  return data;
 };

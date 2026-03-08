@@ -1,4 +1,8 @@
+import { getUserProfile } from "@/_services/userService";
 import { supabase } from "@/utils/supabaseClient";
+
+export const SUSPENDED_ERROR_MESSAGE =
+  "Akun anda telah di nonaktifkan, coba untuk menghubungi admin.";
 
 // ===================== AUTHENTICATION =====================
 /**
@@ -10,8 +14,20 @@ export const loginWithEmail = async ({ email, password }) => {
     password,
   });
 
-  if (error) throw new Error(error.message || "Login Failed");
-  return data;
+  if (error) throw new Error(error.message || "Login gagal");
+
+  const userId = data?.user?.id;
+  if (!userId) throw new Error("User tidak ditemukan");
+
+  const profile = await getUserProfile(userId);
+
+  if (profile?.status === "suspended") {
+    sessionStorage.setItem("auth_error", SUSPENDED_ERROR_MESSAGE);
+    supabase.auth.signOut();
+    throw new Error(SUSPENDED_ERROR_MESSAGE);
+  }
+
+  return { user: data.user, session: data.session, profile };
 };
 
 /**
@@ -29,12 +45,7 @@ export const registerWithEmail = async ({
     email,
     password,
     options: {
-      data: {
-        name,
-        nim,
-        jurusan,
-        telepon,
-      },
+      data: { name, nim, jurusan, telepon },
     },
   });
 
@@ -50,6 +61,7 @@ export const registerWithEmail = async ({
       nim,
       jurusan,
       telepon,
+      status: "active",
     });
   }
 
@@ -60,6 +72,12 @@ export const registerWithEmail = async ({
  * Logout User
  */
 export const logout = async () => {
+  const { data } = await supabase.auth.getUser();
+
+  if (data?.user) {
+    await setUserStatus(data.user.id, "inactive");
+  }
+
   const { error } = await supabase.auth.signOut();
 
   if (error) throw new Error(error.message || "Logout Failed");
@@ -79,4 +97,17 @@ export const signInWithGoogle = async () => {
   if (error) throw new Error(error.message || "Login Google Failed");
 
   return data;
+};
+
+/**
+ * Set User Status
+ */
+export const setUserStatus = async (userId, status) => {
+  if (!userId) return;
+
+  let query = supabase.from("users").update({ status }).eq("id", userId);
+  if (status === "active") query = query.neq("status", "suspended");
+
+  const { error } = await query;
+  if (error) throw new Error(error.message || "Failed to update user status");
 };

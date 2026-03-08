@@ -1,8 +1,9 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import * as authService from "@/_services/authService";
 import { useEffect, useState } from "react";
 import { supabase } from "@/utils/supabaseClient";
+import { getUserProfile } from "@/_services/userService";
 
 // ===================== AUTHENTICATION =====================
 /**
@@ -12,26 +13,75 @@ export const useAuth = () => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Ambil session awal
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
+  const enforceSuspend = async (nextSession) => {
+    const userId = nextSession?.user?.id;
+    if (!userId) return nextSession ?? null;
 
-    // Listen perubahan auth
-    const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
-      setSession(session);
-    });
+    const profile = await getUserProfile(userId);
+    if (profile?.status === "suspended") {
+      sessionStorage.setItem("auth_error", authService.SUSPENDED_ERROR_MESSAGE);
+      await supabase.auth.signOut();
+      return null;
+    }
+
+    return nextSession;
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+
+        const safeSession = await enforceSuspend(data?.session ?? null);
+        if (mounted) setSession(safeSession);
+
+        if (safeSession?.user?.id) {
+          authService
+            .setUserStatus(safeSession.user.id, "active")
+            .catch(() => {});
+        }
+      } catch {
+        if (mounted) setSession(null);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, nextSession) => {
+        (async () => {
+          if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+            const safeSession = await enforceSuspend(nextSession);
+            setSession(safeSession);
+
+            if (safeSession?.user?.id) {
+              authService
+                .setUserStatus(safeSession.user.id, "active")
+                .catch(() => {});
+            }
+
+            setLoading(false);
+            return;
+          }
+
+          setSession(nextSession ?? null);
+          setLoading(false);
+        })();
+      },
+    );
 
     return () => {
+      mounted = false;
       listener.subscription.unsubscribe();
     };
   }, []);
 
   return {
     session,
-    user: session?.user,
+    user: session?.user ?? null,
     isAuthenticated: !!session,
     loading,
   };
@@ -45,23 +95,9 @@ export const useLogin = () => {
 
   return useMutation({
     mutationFn: authService.loginWithEmail,
-    onSuccess: async (data) => {
-      const user = data.user;
-
-      // ambil role dari tabel users
-      const { data: profile } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
+    onSuccess: ({ profile }) => {
       const role = profile?.role;
-
-      if (role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/mahasiswa");
-      }
+      navigate(role === "admin" ? "/admin" : "/mahasiswa");
     },
     onError: (error) => {
       console.error("Login error:", error.message);
@@ -91,13 +127,12 @@ export const useRegister = () => {
  */
 export const useLogout = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw new Error(error.message);
-    },
-    onSuccess: () => {
+    mutationFn: authService.logout,
+    onSuccess: async () => {
+      queryClient.clear();
       navigate("/login");
     },
   });
@@ -122,27 +157,38 @@ export const useGoogleLogin = () => {
  * Get Current User Profile (dengan role dari database)
  */
 export const useCurrentUser = () => {
-  const { user } = useAuth();
-
   return useQuery({
-    queryKey: ["currentUser", user?.id],
+    queryKey: ["currentUser"],
+    retry: false,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
     queryFn: async () => {
-      if (!user?.id) return null;
+      const { data: authData, error: authError } =
+        await supabase.auth.getUser();
+      if (authError) throw authError;
 
-      const { data } = await supabase
+      const userId = authData?.user?.id;
+      if (!userId) return null;
+
+      const { data, error } = await supabase
         .from("users")
         .select("*")
-        .eq("id", user.id)
-        .single();
+        .eq("id", userId)
+        .maybeSingle();
 
+      if (error) throw error;
       return data;
     },
-    enabled: !!user?.id,
-    staleTime: 1000 * 60 * 5, // 5 menit
   });
 };
 
 export const useUserRole = () => {
-  const { data: user } = useCurrentUser();
-  return user?.role || null;
+  const { data: user, isLoading, isFetching } = useCurrentUser();
+
+  return {
+    role: user?.role ?? null,
+    roleLoading: isLoading || isFetching,
+  };
 };

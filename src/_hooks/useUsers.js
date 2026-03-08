@@ -1,93 +1,44 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as userService from "@/_services/userService";
 import { useUserRole } from "@/_hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 
 // ===================== ADMIN HOOKS =====================
 /**
- * Ambil daftar user admin dengan pagination & search
+ * Ambil daftar user admin dengan pagination
  */
-export const useAdminUser = ({
-  page = 1,
-  limit = 10,
-  // search = "",
-}) => {
+export const useAdminUser = ({ page, limit }) => {
   const currentRole = useUserRole();
-  const enabled = currentRole === "admin";
+  const enabled = currentRole.role === "admin";
 
   const query = useQuery({
-    queryKey: ["admin-users", { page, limit }],
+    queryKey: ["admin-users", page, limit],
     queryFn: async () => {
-      const res = await userService.adminGetUser({
-        page,
-        limit,
-      });
+      const res = await userService.adminGetUser({ page, limit });
       return res;
     },
+    placeholderData: (prev) => prev,
     enabled,
     keepPreviousData: true,
     staleTime: 30000,
     retry: 1,
     select: (res) => ({
       users: res?.data ?? [],
-      pagination: res?.pagination || {},
-      success: res?.success,
-      message: res?.message,
+      pagination: {
+        total: res?.total ?? 0,
+        page: res?.page ?? 1,
+        limit: res?.limit ?? 10,
+      },
     }),
   });
 
   return {
     ...query,
     users: query.data?.users ?? [],
-    pagination: query.data?.pagination ?? {},
+    pagination: query.data?.pagination ?? { total: 0, page: 1, limit: 10 },
     isLoading: query.isLoading,
     error: query.error,
     isFetching: query.isFetching,
   };
-};
-
-/**
- * Create User mahasiswa Mutation
- */
-export const useAdminCreateUser = () => {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (userData) => {
-      const res = await userService.adminCreateUser(userData);
-      return res;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      navigate("/admin/users");
-      console.log("✅ User berhasil dibuat:", data.message);
-    },
-    onError: (error) => {
-      console.error("❌ Error create user:", error.message || error);
-    },
-  });
-};
-
-/**
- * Delete user Mutation
- */
-export const useAdminDeleteUser = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (userId) => {
-      const res = await userService.adminDeleteUser(userId);
-      return res;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      console.log("✅ User berhasil dihapus:", data.message);
-    },
-    onError: (error) => {
-      console.error("❌ Error deleting user:", error.message);
-    },
-  });
 };
 
 /**
@@ -98,12 +49,12 @@ export const useAdminChangeStatusUser = () => {
 
   return useMutation({
     mutationFn: async ({ userId, status }) => {
-      const res = await userService.adminChangeUserStatus(userId, { status });
+      const res = await userService.adminChangeUserStatus(userId, status);
       return res;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      console.log("✅ Status berhasil diubah:", data.message);
+      console.log("✅ Status berhasil diubah:");
     },
     onError: (error) => {
       console.error("❌ Error changing status:", error.message);

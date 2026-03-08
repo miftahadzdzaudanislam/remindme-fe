@@ -1,3 +1,4 @@
+import { useInactivityLogout } from "@/_hooks/utils/useInactive";
 import GuestRoute from "@/components/auth/GuestRoute";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import RoleRoute from "@/components/auth/RoleRoute";
@@ -13,7 +14,7 @@ import AdminTask from "@/pages/admin/tasks/AdminTask";
 import AdminTaskCreate from "@/pages/admin/tasks/AdminTaskCreate";
 import AdminTaskEdit from "@/pages/admin/tasks/AdminTaskEdit";
 import AdminUser from "@/pages/admin/users/AdminUser";
-import AdminUserCreate from "@/pages/admin/users/AdminUserCreate";
+// import AdminUserCreate from "@/pages/admin/users/AdminUserCreate";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
 import Home from "@/pages/Home";
@@ -24,9 +25,21 @@ import MahasiswaDashboard from "@/pages/mahasiswa/MahasiswaDashboard";
 import MahasiswaTask from "@/pages/mahasiswa/tasks/MahasiswaTask";
 import MahasiswaTaskCreate from "@/pages/mahasiswa/tasks/MahasiswaTaskCreate";
 import MahasiswaTaskEdit from "@/pages/mahasiswa/tasks/MahasiswaTaskEdit";
+import { Loader2 } from "lucide-react";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
+  const inactivity = useInactivityLogout() || {};
+  const { authLoading = false } = inactivity;
+
+  if (authLoading) return (
+    <div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 size={60} className="animate-spin text-primary" />
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Routes>
@@ -49,7 +62,7 @@ function App() {
 
               <Route path="users">
                 <Route index element={<AdminUser />} />
-                <Route path="create" element={<AdminUserCreate />} />
+                {/* <Route path="create" element={<AdminUserCreate />} /> */}
                 <Route path="details/:id" element={"DetailUser"} />
                 <Route
                   path="details/:id/login-history"

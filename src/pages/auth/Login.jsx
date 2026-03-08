@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin, useLogin } from "@/_hooks/useAuth";
 import { useEffect } from "react";
+import useForcedAuthError from "@/_hooks/utils/useForcedAuthError";
 
 export default function Login() {
   useDocumentTitle("Login");
@@ -27,6 +28,14 @@ export default function Login() {
   const loginMutation = useLogin();
   const { isPending, isError, error } = loginMutation;
 
+  const { forcedError, clearForcedError } = useForcedAuthError();
+
+  useEffect(() => {
+    if (forcedError) {
+      sessionStorage.removeItem("auth_error");
+    }
+  }, [forcedError]);
+
   // Reset password saat login gagal (error server)
   useEffect(() => {
     if (isError) {
@@ -35,6 +44,7 @@ export default function Login() {
   }, [isError, resetField]);
 
   const onSubmit = (data) => {
+    clearForcedError();
     loginMutation.mutate(data);
   };
 
@@ -70,28 +80,23 @@ export default function Login() {
         </div>
 
         {/* Error Server */}
-        {isError && (
+        {(error || forcedError) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-start gap-3 bg-red-500/20 border border-red-400/50 rounded-lg p-4 pb-6"
+            className="flex items-start gap-3 bg-red-500/20 border border-red-400/50 rounded-lg p-4"
           >
             <AlertCircle size={20} className="text-red-300 mt-0.5 shrink-0" />
             <div className="flex-1">
               <p className="text-red-200 text-sm font-medium">
-                {error?.response?.data?.message ||
-                  error?.message ||
-                  "Login gagal. Silakan coba lagi."}
-              </p>
-              <p className="text-red-300 text-xs mt-1">
-                Pastikan email dan password Anda benar.
+                {error?.message || forcedError}
               </p>
             </div>
           </motion.div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 pt-6">
           <UserInput
             label="Email"
             icon={Mail}
@@ -167,7 +172,7 @@ export default function Login() {
           </div>
           <div className="flex-1 h-0.5 bg-gray-300"></div>
         </div>
-        
+
         <motion.button
           whileTap={{ scale: !isPending ? 0.98 : 1 }}
           onClick={login}
